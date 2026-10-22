@@ -13,6 +13,8 @@ export interface Project {
   repo?: string
   /** Repo exists but is private: show a badge instead of a link. */
   privateRepo?: boolean
+  /** Demo video in public/demos: H.264 mp4 plus a poster frame. */
+  video?: { src: string; poster: string; caption?: string }
   /** 1–3, sets planet size and ordering. */
   weight: number
   featured?: boolean
@@ -176,6 +178,11 @@ export const projects: Project[] = [
     year: 2026,
     tech: ['TypeScript', 'MCP', 'ffmpeg', 'Node'],
     privateRepo: true,
+    video: {
+      src: '/demos/mcp-ugc.mp4',
+      poster: '/demos/mcp-ugc.jpg',
+      caption: 'A real run over stdio: 13 tool calls turn this site into a captioned TikTok, then stop for confirmation before posting.',
+    },
     weight: 1,
   },
   {

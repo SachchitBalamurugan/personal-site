@@ -1,0 +1,11 @@
+{
+  "name": "site-demos",
+  "private": true,
+  "type": "module",
+  "description": "Scripts that build the project demo videos in public/demos. Not part of the site build.",
+  "devDependencies": {
+    "@mediapipe/tasks-vision": "^1.0.1",
+    "playwright": "1.56.1",
+    "tsx": "^4.20.0"
+  }
+}

@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# demo video build output
+tools/demos/out
+tools/demos/chela/.cache

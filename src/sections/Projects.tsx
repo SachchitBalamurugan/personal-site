@@ -5,9 +5,14 @@ import { ExtLink, Reveal, SectionHead } from './ui'
 
 const ProjectGalaxy = lazy(() => import('../three/ProjectGalaxy'))
 
-function ProjectLinks({ p }: { p: Project }) {
+function ProjectLinks({ p, onWatch }: { p: Project; onWatch?: () => void }) {
   return (
     <div className="card-links">
+      {p.video && onWatch && (
+        <button className="btn btn-demo" onClick={onWatch}>
+          Watch demo
+        </button>
+      )}
       {p.live && <ExtLink href={p.live}>{p.live.includes('spaceappschallenge') ? 'NASA page' : 'Live'}</ExtLink>}
       {p.repo && <ExtLink href={p.repo}>GitHub</ExtLink>}
       {p.privateRepo && <span className="badge-private">private repo</span>}
@@ -15,7 +20,7 @@ function ProjectLinks({ p }: { p: Project }) {
   )
 }
 
-function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+function ProjectModal({ project, autoPlay, onClose }: { project: Project; autoPlay: boolean; onClose: () => void }) {
   const meta = categoryMeta[project.category]
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -47,6 +52,12 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
         </p>
         <h3 id="modal-title">{project.name}</h3>
         <p className="modal-tagline">{project.tagline}</p>
+        {project.video && (
+          <figure className="modal-video">
+            <video src={project.video.src} poster={project.video.poster} controls muted playsInline autoPlay={autoPlay} preload="metadata" />
+            {project.video.caption && <figcaption>{project.video.caption}</figcaption>}
+          </figure>
+        )}
         <p>{project.description}</p>
         <ul className="tags">
           {project.tech.map((t) => (
@@ -70,6 +81,11 @@ function canUseWebGL() {
 
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null)
+  const [autoPlay, setAutoPlay] = useState(false)
+  const open = (p: Project, play = false) => {
+    setAutoPlay(play)
+    setSelected(p)
+  }
   const [filter, setFilter] = useState<Category | 'all'>('all')
   const [view, setView] = useState<'galaxy' | 'list'>(() => (window.innerWidth < 700 || !canUseWebGL() ? 'list' : 'galaxy'))
   const shown = filter === 'all' ? projects : projects.filter((p) => p.category === filter)
@@ -109,7 +125,7 @@ export default function Projects() {
       {view === 'galaxy' ? (
         <div className="galaxy-frame">
           <Suspense fallback={<div className="galaxy-loading">warming up the star…</div>}>
-            <ProjectGalaxy projects={shown} onSelect={setSelected} />
+            <ProjectGalaxy projects={shown} onSelect={(p) => open(p)} />
           </Suspense>
           <div className="galaxy-legend">
             {(Object.keys(categoryMeta) as Category[]).map((c) => (
@@ -130,7 +146,7 @@ export default function Projects() {
                 {p.event && <> · {p.event}</>}
               </p>
               <h3>
-                <button className="link-button" onClick={() => setSelected(p)}>
+                <button className="link-button" onClick={() => open(p)}>
                   {p.name}
                 </button>
               </h3>
@@ -140,13 +156,13 @@ export default function Projects() {
                   <li key={t}>{t}</li>
                 ))}
               </ul>
-              <ProjectLinks p={p} />
+              <ProjectLinks p={p} onWatch={() => open(p, true)} />
             </article>
           </Reveal>
         ))}
       </div>
 
-      <AnimatePresence>{selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}</AnimatePresence>
+      <AnimatePresence>{selected && <ProjectModal project={selected} autoPlay={autoPlay} onClose={() => setSelected(null)} />}</AnimatePresence>
     </section>
   )
 }

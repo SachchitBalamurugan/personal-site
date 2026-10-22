@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chela Take Recorder</title>
+<style>
+  :root { --bg: #07080d; --panel: #0e1019; --border: #23273a; --text: #e8ebf5; --muted: #8189a6; --teal: #3ef0c8; --amber: #ffb547 }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, sans-serif }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px }
+  h1 { font-size: 1.4rem; margin: 0 0 4px }
+  p { color: var(--muted); margin: 6px 0 }
+  .stage { position: relative; margin: 18px 0; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 16 / 9 }
+  video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block }
+  .cue { position: absolute; inset: auto 0 0 0; padding: 18px; display: flex; align-items: center; gap: 18px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.85)) }
+  .big { font: 700 44px/1 ui-monospace, monospace; min-width: 3ch }
+  .big.closed { color: var(--amber) }
+  .big.open { color: var(--teal) }
+  .seq { font: 500 22px ui-monospace, monospace; letter-spacing: 0.15em; color: var(--muted) }
+  .seq b { color: var(--text) }
+  .rec { position: absolute; top: 14px; left: 14px; padding: 4px 10px; border-radius: 999px; background: #c62828; font-size: 12px; font-weight: 600; display: none }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+  input, button, a.btn { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 9px 16px; text-decoration: none }
+  button { cursor: pointer }
+  button.primary { background: var(--teal); color: #04110d; border-color: var(--teal); font-weight: 600 }
+  button:disabled { opacity: 0.4; cursor: default }
+  label { color: var(--muted); display: inline-flex; gap: 8px; align-items: center }
+  ol { color: var(--muted); padding-left: 20px }
+  code { color: var(--text) }
+  .plan { font: 13px ui-monospace, monospace; color: var(--muted); white-space: pre-wrap; margin-top: 10px }
+</style>
+</head>
+<body>
+<main>
+  <h1>Chela take recorder</h1>
+  <p>Records a webcam take of you blinking a word in Morse. Afterwards, the clip runs through Chela's real blink detector and Morse decoder, and the demo video shows what they decoded.</p>
+  <ol>
+    <li>Sit facing the camera in even light, with your whole face in frame. Glasses are fine if they don't glare.</li>
+    <li>Turn your sound on. With your eyes shut you can't see the screen, so <b>a tone plays for as long as you should keep your eyes closed</b>. Close when it starts and open when it stops.</li>
+    <li>It begins with two short clicks. Just blink normally at each one. Chela should ignore those blinks.</li>
+    <li>When it's done, download the clip and send it over, or commit it to a branch (not main) as <code>tools/demos/chela/take.webm</code>.</li>
+  </ol>
+
+  <div class="stage">
+    <video id="cam" muted playsinline></video>
+    <span class="rec" id="rec">REC</span>
+    <div class="cue"><span class="big" id="big">ready</span><span class="seq" id="seq"></span></div>
+  </div>
+
+  <div class="controls">
+    <label>Word <input id="word" value="HELP" size="8" /></label>
+    <label><input type="checkbox" id="send" checked /> end with SEND (.-.-.), which speaks the word</label>
+    <button id="camBtn">Turn on camera</button>
+    <button class="primary" id="go" disabled>Record take</button>
+    <a class="btn" id="dl" hidden>Download take</a>
+  </div>
+  <div class="plan" id="plan"></div>
+</main>
+
+<script>
+// Durations sit in the middle of Chela's default ranges (src/morse/decoder.ts DEFAULT_TIMING):
+// dot 500-1200 ms closed, dash 1200-3000 ms, and a letter commits after >= 1500 ms open
+// (adaptive: 2.5x your median gap inside a letter, so keep in-letter gaps short).
+const T = { dot: 800, dash: 1900, inLetter: 600, letterGap: 2500, natural: 150, lead: 2500, tail: 3500 }
+const MORSE = { A: '.-', B: '-...', C: '-.-.', D: '-..', E: '.', F: '..-.', G: '--.', H: '....', I: '..', J: '.---', K: '-.-', L: '.-..', M: '--', N: '-.', O: '---', P: '.--.', Q: '--.-', R: '.-.', S: '...', T: '-', U: '..-', V: '...-', W: '.--', X: '-..-', Y: '-.--', Z: '--..' }
+const $ = (id) => document.getElementById(id)
+let stream, audio
+
+function schedule(word, send) {
+  const segs = [{ open: T.lead, label: 'get ready' }]
+  // Two natural blinks: short clicks, not tones.
+  segs.push({ click: true, open: 1500, label: 'blink normally' }, { click: true, open: 2000, label: 'blink normally' })
+  const letters = [...word.toUpperCase()].filter((c) => MORSE[c]).map((c) => ({ c, code: MORSE[c] }))
+  if (send) letters.push({ c: 'SEND', code: '.-.-.' })
+  for (const { c, code } of letters) {
+    ;[...code].forEach((s, i) => {
+      segs.push({ closed: s === '.' ? T.dot : T.dash, open: i === code.length - 1 ? T.letterGap : T.inLetter, letter: c, code, index: i })
+    })
+  }
+  segs[segs.length - 1].open = T.tail
+  return segs
+}
+
+function describe() {
+  const segs = schedule($('word').value, $('send').checked)
+  const total = segs.reduce((a, s) => a + (s.closed || 0) + (s.open || 0), 0)
+  $('plan').textContent = `Take length about ${(total / 1000).toFixed(0)} s. Dot: tone ${T.dot} ms. Dash: tone ${T.dash} ms. Between symbols: ${T.inLetter} ms open. Between letters: ${T.letterGap} ms open.`
+}
+$('word').oninput = describe
+$('send').onchange = describe
+describe()
+
+$('camBtn').onclick = async () => {
+  stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, frameRate: { ideal: 30 }, facingMode: 'user' }, audio: false })
+  $('cam').srcObject = stream
+  await $('cam').play()
+  $('go').disabled = false
+  $('camBtn').disabled = true
+}
+
+function tone(ms, freq = 520) {
+  const o = audio.createOscillator()
+  const g = audio.createGain()
+  o.frequency.value = freq
+  const t = audio.currentTime
+  g.gain.setValueAtTime(0, t)
+  g.gain.linearRampToValueAtTime(0.25, t + 0.015)
+  g.gain.setValueAtTime(0.25, t + ms / 1000 - 0.02)
+  g.gain.linearRampToValueAtTime(0, t + ms / 1000)
+  o.connect(g).connect(audio.destination)
+  o.start(t)
+  o.stop(t + ms / 1000 + 0.05)
+}
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+
+$('go').onclick = async () => {
+  audio ??= new AudioContext()
+  await audio.resume()
+  $('go').disabled = true
+  $('dl').hidden = true
+  const type = ['video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm'].find((t) => MediaRecorder.isTypeSupported(t))
+  const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 6_000_000 })
+  const chunks = []
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data)
+  rec.start(1000)
+  $('rec').style.display = 'block'
+
+  for (const s of schedule($('word').value, $('send').checked)) {
+    if (s.click) {
+      tone(60, 1200)
+      $('big').textContent = 'blink'
+      $('big').className = 'big'
+      $('seq').textContent = 'a normal blink: Chela should ignore it'
+    } else if (s.closed) {
+      tone(s.closed)
+      $('big').textContent = s.code[s.index] === '.' ? 'dot' : 'dash'
+      $('big').className = 'big closed'
+      $('seq').innerHTML = `${s.letter}  ${[...s.code].map((c, i) => (i === s.index ? `<b>${c}</b>` : c)).join(' ')}`
+      await wait(s.closed)
+    } else {
+      $('big').textContent = s.label ?? ''
+      $('seq').textContent = ''
+    }
+    if (!s.click && s.closed) {
+      $('big').textContent = 'open'
+      $('big').className = 'big open'
+    }
+    await wait(s.open)
+  }
+
+  rec.stop()
+  await new Promise((r) => (rec.onstop = r))
+  $('rec').style.display = 'none'
+  const blob = new Blob(chunks, { type: rec.mimeType })
+  const ext = rec.mimeType.startsWith('video/mp4') ? 'mp4' : 'webm'
+  $('dl').href = URL.createObjectURL(blob)
+  $('dl').download = `take.${ext}`
+  $('dl').textContent = `Download take.${ext} (${(blob.size / 1e6).toFixed(1)} MB)`
+  $('dl').hidden = false
+  $('big').textContent = 'done'
+  $('big').className = 'big'
+  $('seq').textContent = 'watch it back, and record again if a blink went wrong'
+  $('go').disabled = false
+}
+</script>
+</body>
+</html>

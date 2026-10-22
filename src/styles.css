@@ -288,6 +288,11 @@ main {
   font-size: 0.82rem;
 }
 
+.card-links .btn-demo {
+  border-color: color-mix(in srgb, var(--accent, var(--teal)) 60%, transparent);
+  color: var(--accent, var(--teal));
+}
+
 .card-links.center {
   justify-content: center;
 }
@@ -751,6 +756,26 @@ main {
   color: var(--text);
   font-size: 1.4rem;
   cursor: pointer;
+}
+
+.modal-video {
+  margin: 4px 0 18px;
+}
+
+.modal-video video {
+  display: block;
+  width: 100%;
+  max-height: 56vh;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.modal-video figcaption {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
 }
 
 /* ---------- research ---------- */
