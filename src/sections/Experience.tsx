@@ -35,9 +35,7 @@ export function Awards() {
         {awards.map((a, i) => (
           <Reveal key={a.title} delay={(i % 4) * 0.05}>
             <div className="award">
-              <span className="award-icon" aria-hidden="true">
-                {a.icon}
-              </span>
+              <span className="award-tag">{a.tag}</span>
               <h3>{a.title}</h3>
               <p>{a.detail}</p>
             </div>

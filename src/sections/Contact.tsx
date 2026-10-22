@@ -43,15 +43,15 @@ export function EasterEggs() {
     <AnimatePresence>
       {egg === 'rizz' && (
         <motion.div className="toast" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} role="status">
-          <p className="card-meta">you found it: Brainrot Lang 🧠</p>
+          <p className="card-meta">you found it: Brainrot Lang</p>
           <pre>{BRAINROT}</pre>
           <p className="toast-out">&gt; it's over 9000 fr fr</p>
         </motion.div>
       )}
       {egg === 'konami' && (
         <motion.div className="runner" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-hidden="true">
-          <span className="runner-guy">🏃🏽</span>
-          <span className="runner-log">🪵</span>
+          <span className="runner-guy" />
+          <span className="runner-log" />
           <p>Jungle Run IRL unlocked. Go play the real one with your whole body.</p>
         </motion.div>
       )}
@@ -77,7 +77,7 @@ export function Contact() {
           }}
         >
           {profile.email}
-          <span className="copy-hint">{copied ? 'copied ✓' : 'click to copy'}</span>
+          <span className="copy-hint">{copied ? 'copied' : 'click to copy'}</span>
         </button>
         <div className="card-links center">
           <a className="btn btn-primary" href={`mailto:${profile.email}`}>

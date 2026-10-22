@@ -184,12 +184,33 @@ export const experience: Job[] = [
     points: ['Built the whole stack (app, RAG pipeline, voice tutor, Chrome extension)', '130K+ users, 90+ schools, interviewed for PearX'],
   },
   {
-    role: 'Software / Data Infrastructure Engineer Intern',
-    org: 'State Farm',
-    when: 'Jun 2025 – now',
+    role: 'Software / Data Infrastructure Engineer Intern, Fall 2026',
+    org: 'State Farm®',
+    when: 'Sep 2026 – now',
     points: [
-      'Selected from 9,000+ applicants (2%) and invited back as a returning intern',
-      'AWS infrastructure in OpenTofu + Python for the SpaceX team; an LLM pipeline for the internal Test Case AI',
+      'Research task: find a way to automate user flow charts',
+      'Building a local adaptive knowledge base that captures user actions through Playwright and generates user flow charts from them',
+      'The flow charts feed into State Farm’s internal AI test case generation infrastructure',
+    ],
+  },
+  {
+    role: 'Software / Data Infrastructure Engineer Intern, Summer 2026',
+    org: 'State Farm®',
+    when: 'May 2026 – Aug 2026',
+    points: [
+      'Developed an algorithm to convert BOB’s Test Case format into a format readable by the AI model the company is developing',
+      'The model uses this data to create real test cases, generate AI-powered summaries of results, and provide performance statistics and insights',
+      'Built a process that uses ChatGPT’s API and several data feeds to convert multi-transaction-step BOB’s Test Cases for the model',
+    ],
+  },
+  {
+    role: 'Software / Data Infrastructure Engineer Intern, Summer 2025',
+    org: 'State Farm®',
+    when: 'Jun 2025 – Aug 2025',
+    points: [
+      'Selected from 9,000+ applicants (2% acceptance rate)',
+      'Built AWS infrastructure with OpenTofu and Python for the SpaceX team, automating secure token access and AI-powered merge request notifications',
+      'Contributed to a hackathon project building an AI-driven employee dictionary for rapid term search',
     ],
   },
   {
@@ -242,19 +263,19 @@ export const experience: Job[] = [
   },
 ]
 
-export const awards: { title: string; detail: string; icon: string }[] = [
-  { icon: '🚀', title: 'NASA Space Apps', detail: 'Global People’s Choice 2024 · Global Nominee 2024 & 2025' },
-  { icon: '🗼', title: 'IYRC Tokyo', detail: '1 of 27 students worldwide to present' },
-  { icon: '🥇', title: 'BPA National 1st', detail: 'Mobile Application, 2024–25 · 7th Computer Modeling' },
-  { icon: '🤖', title: 'FRC Texas State Champion', detail: '27th / 3,690 at Worlds · 2× District Champion' },
-  { icon: '🌍', title: 'Destination Imagination', detail: 'World Champion, Digital Open · Magellan Award' },
-  { icon: '🧠', title: 'RISE Global Finalist', detail: 'Top ~2% worldwide, 2023' },
-  { icon: '🦅', title: 'Eagle Scout', detail: '45 merit badges · Bronze, Gold & Silver Palms · OA' },
-  { icon: '🎤', title: 'SXSW EDU 2026', detail: 'Workshop on cancer research + YOTI' },
-  { icon: '🏅', title: 'President’s Volunteer Service', detail: 'Gold Medal · 1,200+ service hours' },
-  { icon: '🇺🇳', title: 'UN Association', detail: 'National Ambassador · Zero Hunger & Zero Waste' },
-  { icon: '🔬', title: 'ISEF State Qualifier', detail: '3rd, Fort Worth Regional CS · Texas A&M state fair' },
-  { icon: '🎓', title: 'AP Scholar w/ Distinction', detail: 'College Board National Recognition' },
-  { icon: '🏛️', title: 'Texas FBLA Area 9 State VP', detail: '2025–26 · first gamified service challenge' },
-  { icon: '📜', title: 'Certiport IT Specialist', detail: 'AI, Python, Java, JavaScript, HTML/CSS' },
+export const awards: { title: string; detail: string; tag: string }[] = [
+  { tag: 'NASA', title: 'NASA Space Apps', detail: 'Global People’s Choice 2024 · Global Nominee 2024 & 2025' },
+  { tag: 'Research', title: 'IYRC Tokyo', detail: '1 of 27 students worldwide to present' },
+  { tag: 'Competition', title: 'BPA National 1st', detail: 'Mobile Application, 2024–25 · 7th Computer Modeling' },
+  { tag: 'Robotics', title: 'FRC Texas State Champion', detail: '27th / 3,690 at Worlds · 2× District Champion' },
+  { tag: 'Competition', title: 'Destination Imagination', detail: 'World Champion, Digital Open · Magellan Award' },
+  { tag: 'Research', title: 'RISE Global Finalist', detail: 'Top ~2% worldwide, 2023' },
+  { tag: 'Service', title: 'Eagle Scout', detail: '45 merit badges · Bronze, Gold & Silver Palms · OA' },
+  { tag: 'Speaking', title: 'SXSW EDU 2026', detail: 'Workshop on cancer research + YOTI' },
+  { tag: 'Service', title: 'President’s Volunteer Service', detail: 'Gold Medal · 1,200+ service hours' },
+  { tag: 'Service', title: 'UN Association', detail: 'National Ambassador · Zero Hunger & Zero Waste' },
+  { tag: 'Research', title: 'ISEF State Qualifier', detail: '3rd, Fort Worth Regional CS · Texas A&M state fair' },
+  { tag: 'Academics', title: 'AP Scholar w/ Distinction', detail: 'College Board National Recognition' },
+  { tag: 'Leadership', title: 'Texas FBLA Area 9 State VP', detail: '2025–26 · first gamified service challenge' },
+  { tag: 'Certification', title: 'Certiport IT Specialist', detail: 'AI, Python, Java, JavaScript, HTML/CSS' },
 ]

@@ -98,10 +98,10 @@ export default function Projects() {
         </div>
         <div className="view-toggle" role="group" aria-label="View">
           <button className={view === 'galaxy' ? 'is-active' : ''} onClick={() => setView('galaxy')}>
-            🪐 Galaxy
+            Galaxy
           </button>
           <button className={view === 'list' ? 'is-active' : ''} onClick={() => setView('list')}>
-            ☰ List
+            List
           </button>
         </div>
       </Reveal>

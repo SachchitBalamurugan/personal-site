@@ -1055,8 +1055,16 @@ main {
   border-color: rgba(255, 181, 71, 0.5);
 }
 
-.award-icon {
-  font-size: 1.8rem;
+.award-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 181, 71, 0.35);
+  border-radius: 999px;
 }
 
 .award h3 {
@@ -1189,17 +1197,25 @@ main {
 .runner-log {
   position: absolute;
   bottom: 20px;
-  font-size: 2.4rem;
 }
 
 .runner-guy {
   left: -60px;
+  width: 22px;
+  height: 38px;
+  border-radius: 11px 11px 6px 6px;
+  background: var(--teal);
+  box-shadow: 0 0 18px var(--teal);
   animation: run 4s linear forwards, hop 4s ease-in-out forwards;
-  transform: scaleX(-1);
 }
 
 .runner-log {
   left: 55%;
+  width: 54px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--amber);
+  box-shadow: 0 0 14px rgba(255, 181, 71, 0.6);
 }
 
 @keyframes run {

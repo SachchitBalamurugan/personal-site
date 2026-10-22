@@ -8,7 +8,7 @@ export default function About() {
       <div className="about-grid">
         <Reveal className="about-photo">
           <img src="/headshot.png" alt="Sachchit Balamurugan in a suit, wearing a competition medal" width={296} height={392} />
-          <span className="photo-tag">BPA Nationals · 🥇 Mobile App</span>
+          <span className="photo-tag">BPA Nationals · 1st, Mobile App</span>
         </Reveal>
         <Reveal delay={0.1} className="about-copy">
           <p className="lede">
