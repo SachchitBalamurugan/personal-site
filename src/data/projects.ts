@@ -55,6 +55,12 @@ export const projects: Project[] = [
     tech: ['Python', 'FastAPI', 'WebSockets', 'Gemini Live', 'Firebase', 'Stripe'],
     live: 'https://orbit-ai-kappa.vercel.app',
     privateRepo: true,
+    video: {
+      src: '/demos/orbit.mp4',
+      poster: '/demos/orbit.jpg',
+      caption:
+        "A simulated call on Orbit's real teleprompter, run locally: the buyer and the coach's lines are scripted in place of live audio and Gemini, and Orbit's own backend scores the call and moves the stage rail.",
+    },
     weight: 3,
     featured: true,
   },
@@ -117,6 +123,12 @@ export const projects: Project[] = [
     tech: ['Python', 'Vision Models', 'Tokenization', 'Human-in-the-loop'],
     live: 'https://clara-ai-azure.vercel.app',
     privateRepo: true,
+    video: {
+      src: '/demos/clara.mp4',
+      poster: '/demos/clara.jpg',
+      caption:
+        "CLARA run locally on its synthetic sample documents, with a scripted stand-in for Gemini. Its own pipeline tokenizes every identifier, the I-130 check flags the planted date-of-birth mismatch and missing marriage certificate, and a clerk returns the case.",
+    },
     weight: 2,
   },
   {
