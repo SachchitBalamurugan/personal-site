@@ -89,7 +89,8 @@ await page.evaluate(({ data }) => {
     c.strokeStyle = '#3ef0c8'; c.lineWidth = 4; c.beginPath()
     for (let k = Math.max(0, i - span); k <= i; k++) {
       const x = ((k - (i - span)) / span) * w
-      k === Math.max(0, i - span) ? c.moveTo(x, y(timeline[k].signal)) : c.lineTo(x, y(timeline[k].signal))
+      if (k === Math.max(0, i - span)) c.moveTo(x, y(timeline[k].signal))
+      else c.lineTo(x, y(timeline[k].signal))
     }
     c.stroke()
 
