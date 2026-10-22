@@ -57,7 +57,8 @@ export default function Hero() {
       <motion.p className="hero-blurb" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3 }}>
         I build AI for real problems, like spotting a rare cancer early, teaching
         students from their own coursework, and giving a voice to people who can only blink.
-        I'm studying bioengineering at <strong>UC Berkeley</strong> and I'm CTO of <strong>FschoolAI</strong>.
+        I'm studying bioengineering at <strong>UC Berkeley</strong> as a <strong>Regents' and Chancellor's Scholar</strong>,
+        and I'm CTO of <strong>FschoolAI</strong>.
       </motion.p>
       <motion.div className="hero-cta" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
         <a className="btn btn-primary" href="#projects">
