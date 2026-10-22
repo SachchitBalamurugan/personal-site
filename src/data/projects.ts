@@ -98,6 +98,11 @@ export const projects: Project[] = [
     event: 'Hack-Nation',
     tech: ['TypeScript', 'ONNX', 'Whisper', 'MediaPipe', 'Offline-first'],
     privateRepo: true,
+    video: {
+      src: '/demos/chela.mp4',
+      poster: '/demos/chela.jpg',
+      caption: "My real webcam take, run through Chela's own blink detector and Morse decoder. Natural blinks are ignored, H E L P is typed, and SEND speaks it.",
+    },
     weight: 2,
     featured: true,
   },
