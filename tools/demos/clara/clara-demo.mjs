@@ -30,12 +30,12 @@ try {
   await walkthrough({
     url: `${ORIGIN}/demo/signin/filer`,
     out,
-    label: 'CLARA · run locally · synthetic sample documents',
+    label: 'CLARA · sample documents',
     viewport: { width: 1600, height: 900 },
     posterAt: 14,
     beats: [
       {
-        caption: "CLARA running locally from its repo, signed in as a demo filer. A new case for an I-130 spousal petition.",
+        caption: 'A filer starts a new case for an I-130 spousal petition.',
         seconds: 7,
         act: async (page) => {
           await scrollTo(page, 'form[action="/cases"]', 80)
@@ -52,7 +52,7 @@ try {
         },
       },
       {
-        caption: "The four synthetic sample documents go in. A scripted stand-in for Gemini reports what the sample generator printed; CLARA's own pipeline does the rest.",
+        caption: 'Four sample documents go in. Each one is straightened, checked, and read, one stage at a time.',
         seconds: 12,
         act: async (page) => {
           await scrollTo(page, '#file', 160)
@@ -74,7 +74,7 @@ try {
         },
       },
       {
-        caption: "The I-130 check finds both planted defects: the beneficiary's date of birth differs between documents, and there is no marriage certificate.",
+        caption: "The I-130 check catches that the beneficiary's date of birth differs between documents, and that there is no marriage certificate.",
         seconds: 9,
         act: async (page) => {
           await page.locator('button[hx-post$="/review"]').click()
@@ -84,7 +84,7 @@ try {
         },
       },
       {
-        caption: 'It also flags the petitioner\'s date of birth, because the passport prints it as 22 JUL 1988 and CLARA compares dates by their digits.',
+        caption: 'Each finding says what is wrong and what to do about it before filing.',
         seconds: 7,
         act: async (page) => {
           await smoothScroll(page, 260, 20)
@@ -92,7 +92,7 @@ try {
         },
       },
       {
-        caption: 'The case is queued for a clerk the way the repo\'s seed script does it. Hovering a field outlines where it was read, so the clerk checks it instead of retyping it.',
+        caption: 'The case goes to a court clerk. Hovering a field outlines where it was read on the page, so the clerk checks it instead of retyping it.',
         seconds: 11,
         act: async (page) => {
           await page.goto(`${ORIGIN}/demo/queue/${caseId}`)
@@ -110,7 +110,7 @@ try {
         },
       },
       {
-        caption: 'The clerk returns it to the filer with a note. Nothing is filed with USCIS or EOIR; this is a research prototype.',
+        caption: 'The clerk returns the case to the filer with a note. Nothing is filed with USCIS or EOIR.',
         seconds: 8,
         act: async (page) => {
           await page.mouse.move(10, 10)

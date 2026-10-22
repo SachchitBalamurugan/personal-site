@@ -59,7 +59,7 @@ export const projects: Project[] = [
       src: '/demos/orbit.mp4',
       poster: '/demos/orbit.jpg',
       caption:
-        "A simulated call on Orbit's real teleprompter, run locally: the buyer and the coach's lines are scripted in place of live audio and Gemini, and Orbit's own backend scores the call and moves the stage rail.",
+        "A call on Orbit's teleprompter: the opening line fills in before dialing, the stage rail follows the call, and the roadmap's objection answer appears when the buyer asks about price.",
     },
     weight: 3,
     featured: true,
@@ -127,7 +127,7 @@ export const projects: Project[] = [
       src: '/demos/clara.mp4',
       poster: '/demos/clara.jpg',
       caption:
-        "CLARA run locally on its synthetic sample documents, with a scripted stand-in for Gemini. Its own pipeline tokenizes every identifier, the I-130 check flags the planted date-of-birth mismatch and missing marriage certificate, and a clerk returns the case.",
+        'Four sample documents go through CLARA: identifiers become tokens, the I-130 check catches a date-of-birth mismatch and a missing marriage certificate, and a clerk sends the case back.',
     },
     weight: 2,
   },

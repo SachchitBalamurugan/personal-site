@@ -92,7 +92,7 @@ const typeInto = async (page, key, text) => {
 await walkthrough({
   url: `${ORIGIN}/teleprompter`,
   out,
-  label: "Orbit's teleprompter · run locally · simulated call",
+  label: 'Orbit · teleprompter',
   setup,
   // A fake microphone lets the page's real audio capture start; nothing it captures is used.
   launchArgs: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
@@ -100,7 +100,7 @@ await walkthrough({
   posterAt: 22,
   beats: [
     {
-      caption: "Orbit's real teleprompter, run locally from its repo. A roadmap is picked, and typing the buyer's details fills in the opening line before the call.",
+      caption: "Orbit's teleprompter before a call. With a roadmap picked, typing the buyer's details fills in the opening line.",
       seconds: 9,
       act: async (page) => {
         await page.locator('#roadmapFields').scrollIntoViewIfNeeded()
@@ -112,7 +112,7 @@ await walkthrough({
       },
     },
     {
-      caption: 'The call is simulated: a scripted buyer replaces live audio and scripted lines stand in for Gemini. Starting it brings up the stage rail.',
+      caption: 'Starting the call brings up the stage rail for the roadmap, with the things a rep should never do pinned underneath.',
       seconds: 7,
       act: async (page) => {
         await page.locator('#start').click()
@@ -124,7 +124,7 @@ await walkthrough({
       },
     },
     {
-      caption: "Each buyer line is scored by Orbit's own analytics, and the rail moves when the coach's line belongs to the next stage.",
+      caption: 'Each buyer line updates mood and signal counts, and the rail moves on when the next suggested line belongs to the next stage.',
       seconds: 10,
       act: async (page) => {
         await replay(1)
