@@ -8,7 +8,7 @@ const ProjectGalaxy = lazy(() => import('../three/ProjectGalaxy'))
 function ProjectLinks({ p, onWatch }: { p: Project; onWatch?: () => void }) {
   return (
     <div className="card-links">
-      {p.video && onWatch && (
+      {(p.video || p.youtube) && onWatch && (
         <button className="btn btn-demo" onClick={onWatch}>
           Watch demo
         </button>
@@ -56,6 +56,18 @@ function ProjectModal({ project, autoPlay, onClose }: { project: Project; autoPl
           <figure className="modal-video">
             <video src={project.video.src} poster={project.video.poster} controls muted playsInline autoPlay={autoPlay} preload="metadata" />
             {project.video.caption && <figcaption>{project.video.caption}</figcaption>}
+          </figure>
+        )}
+        {!project.video && project.youtube && (
+          <figure className="modal-video">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${project.youtube.id}?rel=0${autoPlay ? '&autoplay=1&mute=1' : ''}`}
+              title={`${project.name} demo`}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+              loading="lazy"
+            />
+            {project.youtube.caption && <figcaption>{project.youtube.caption}</figcaption>}
           </figure>
         )}
         <p>{project.description}</p>

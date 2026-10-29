@@ -771,6 +771,15 @@ main {
   background: #000;
 }
 
+.modal-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #000;
+}
+
 .modal-video figcaption {
   margin-top: 8px;
   font-family: var(--font-mono);

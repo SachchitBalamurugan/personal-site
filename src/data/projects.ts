@@ -15,6 +15,8 @@ export interface Project {
   privateRepo?: boolean
   /** Demo video in public/demos: H.264 mp4 plus a poster frame. */
   video?: { src: string; poster: string; caption?: string }
+  /** YouTube demo, embedded in the modal when there is no local video. */
+  youtube?: { id: string; caption?: string }
   /** 1–3, sets planet size and ordering. */
   weight: number
   featured?: boolean
@@ -76,6 +78,22 @@ export const projects: Project[] = [
     tech: ['TypeScript', 'Chrome Extension', 'MCP', 'Vision LLMs', 'Vercel'],
     live: 'https://studylens-two.vercel.app',
     repo: gh('hackathon-SEP-USC'),
+    weight: 3,
+    featured: true,
+  },
+  {
+    id: 'cadswarm',
+    name: 'CADSwarm',
+    tagline: "A team's AI agents building one live CAD model together",
+    description:
+      "A FreeCAD workbench where a team and its AI helpers (Claude Code, Codex, or OpenCode) build one shared 3D model at the same time, with no CAD experience needed. You describe a part, like an enclosure for a Raspberry Pi. A lead agent splits it into tasks, and other agents build the parts live while people watch and steer from FreeCAD or a phone. The team's state lives in a SpacetimeDB database that enforces the rules: an agent holds the parts it is working on, and any change to a part it doesn't hold is refused and rolled back. Shared sizes, crash takeover, and a reviewer agent that checks fit and printability before the STL is exported. Free and open source.",
+    category: 'ai',
+    year: 2026,
+    event: 'Cal Hacks 13.0',
+    tech: ['Rust', 'SpacetimeDB', 'Python', 'FreeCAD', 'MCP', 'TypeScript'],
+    live: 'https://www.cadswarm.design',
+    repo: 'https://github.com/CADSwarm/cadswarm',
+    youtube: { id: 'E3yfQqsgq7Y', caption: 'Our Cal Hacks demo video.' },
     weight: 3,
     featured: true,
   },
