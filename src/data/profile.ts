@@ -264,6 +264,17 @@ export const experience: Job[] = [
 ]
 
 export const awards: { title: string; detail: string; tag: string }[] = [
+  {
+    tag: 'Hackathon',
+    title: 'DNAForge × MTC Berkeley, 1st Place',
+    detail: 'Ray Caster Track at the AI × Biology Hackathon · Nov 2026',
+  },
+  {
+    tag: 'Hackathon',
+    title: 'Y Combinator Haunted Hacks, 1st Place',
+    detail:
+      'Oct 2026 · Built ActorRelay: equipment agents with persistent memory that predict effects, vote with evidence, and negotiate a better target before a plant change. 2 plants, 10 equipment agents, a 5-second operator veto.',
+  },
   { tag: 'NASA', title: 'NASA Space Apps', detail: 'Global People’s Choice 2024 · Global Nominee 2024 & 2025' },
   { tag: 'Research', title: 'IYRC Tokyo', detail: '1 of 27 students worldwide to present' },
   { tag: 'Competition', title: 'BPA National 1st', detail: 'Mobile Application, 2024–25 · 7th Computer Modeling' },

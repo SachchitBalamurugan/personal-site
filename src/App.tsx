@@ -1,102 +1,69 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import Lenis from 'lenis'
+import { useRef } from 'react'
+import Nav from './sections/Nav'
 import Hero from './sections/Hero'
 import About from './sections/About'
-import Projects from './sections/Projects'
+import Showcase from './sections/Showcase'
+import MoreProjects from './sections/MoreProjects'
 import Research from './sections/Research'
 import Missions from './sections/Missions'
 import Press from './sections/Press'
 import { Awards, Experience } from './sections/Experience'
 import { Contact, EasterEggs } from './sections/Contact'
-
-const HelixGalaxy = lazy(() => import('./three/HelixGalaxy'))
-
-const NAV = [
-  ['about', 'About'],
-  ['projects', 'Projects'],
-  ['research', 'Research'],
-  ['nasa', 'NASA'],
-  ['press', 'Press'],
-  ['experience', 'Experience'],
-  ['contact', 'Contact'],
-] as const
-
-function useBackgroundMode() {
-  return useState(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    let webgl = false
-    try {
-      const c = document.createElement('canvas')
-      webgl = !!(c.getContext('webgl2') || c.getContext('webgl'))
-    } catch {
-      webgl = false
-    }
-    return webgl && !reduced ? '3d' : 'static'
-  })[0]
-}
+import { EASE_HOP, gsap, MOTION_OK, ScrollTrigger, useGSAP } from './lib/gsap'
 
 export default function App() {
-  const progress = useRef(0)
-  const mode = useBackgroundMode()
-  const [scrolled, setScrolled] = useState(false)
+  const root = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.1, anchors: true })
-    let raf = 0
-    const loop = (t: number) => {
-      lenis.raf(t)
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    lenis.on('scroll', ({ scroll }: { scroll: number }) => {
-      // the helix fully unwinds over the first ~1.2 screens
-      progress.current = Math.min(1, scroll / (window.innerHeight * 1.2))
-      setScrolled(scroll > 40)
-    })
-    return () => {
-      cancelAnimationFrame(raf)
-      lenis.destroy()
-    }
-  }, [])
+  // Everything marked .reveal blurs up into place as it enters, in small staggered batches.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(MOTION_OK, () => {
+        const items = gsap.utils.toArray<HTMLElement>('.reveal')
+        gsap.set(items, { autoAlpha: 0, y: 28, filter: 'blur(8px)' })
+        ScrollTrigger.batch(items, {
+          start: 'top 90%',
+          once: true,
+          onEnter: (batch) =>
+            gsap.to(batch, {
+              autoAlpha: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 1,
+              ease: EASE_HOP,
+              stagger: 0.08,
+              overwrite: true,
+              clearProps: 'filter',
+            }),
+        })
+      })
+      // Fonts and lazy images shift layout after first paint; re-measure once they land.
+      document.fonts?.ready.then(() => ScrollTrigger.refresh())
+      window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true })
+
+      // The sections render after the browser looks for #anchor, so honor deep links ourselves.
+      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)))
+      if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant' }))
+    },
+    { scope: root },
+  )
 
   return (
-    <>
-      <div className="bg" aria-hidden="true">
-        {mode === '3d' ? (
-          <Suspense fallback={null}>
-            <HelixGalaxy progress={progress} />
-          </Suspense>
-        ) : (
-          <div className="bg-static" />
-        )}
-      </div>
-      <div className="bg-vignette" aria-hidden="true" />
-
-      <nav className={scrolled ? 'nav is-scrolled' : 'nav'}>
-        <a href="#top" className="nav-logo" aria-label="Back to top">
-          sb<span>.</span>
-        </a>
-        <ul>
-          {NAV.map(([id, label]) => (
-            <li key={id}>
-              <a href={`#${id}`}>{label}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
+    <div ref={root} className="page">
+      <Nav />
       <main>
         <Hero />
         <About />
-        <Projects />
+        <Showcase />
+        <MoreProjects />
         <Research />
         <Missions />
         <Press />
         <Experience />
         <Awards />
-        <Contact />
       </main>
+      <Contact />
       <EasterEggs />
-    </>
+    </div>
   )
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { profile } from '../data/profile'
-import { ExtLink, Reveal, SectionHead } from './ui'
+import { Cloud } from '../components/Sky'
+import { LivePill, Orb, Title } from '../components/ui'
+import { useInView } from '../lib/hooks'
 
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
 
@@ -13,7 +14,7 @@ sus (aura > 9000) {
     yap "it's over 9000 fr fr"
 }`
 
-/** Watches the keyboard for typed words and the Konami code. */
+/** Watches the keyboard for "rizz" and the Konami code. */
 function useEasterEggs() {
   const [egg, setEgg] = useState<'rizz' | 'konami' | null>(null)
   useEffect(() => {
@@ -39,61 +40,132 @@ function useEasterEggs() {
 
 export function EasterEggs() {
   const egg = useEasterEggs()
-  return (
-    <AnimatePresence>
-      {egg === 'rizz' && (
-        <motion.div className="toast" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} role="status">
-          <p className="card-meta">you found it: Brainrot Lang</p>
-          <pre>{BRAINROT}</pre>
-          <p className="toast-out">&gt; it's over 9000 fr fr</p>
-        </motion.div>
-      )}
-      {egg === 'konami' && (
-        <motion.div className="runner" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-hidden="true">
-          <span className="runner-guy" />
-          <span className="runner-log" />
-          <p>Jungle Run IRL unlocked. Go play the real one with your whole body.</p>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+  if (egg === 'rizz')
+    return (
+      <div className="toast" role="status">
+        <div className="note-head">
+          <Orb small />
+          <b>Brainrot Lang</b>
+          <span>now</span>
+        </div>
+        <p className="toast-title">You found it.</p>
+        <pre>{BRAINROT}</pre>
+        <p className="toast-out">&gt; it's over 9000 fr fr</p>
+      </div>
+    )
+  if (egg === 'konami')
+    return (
+      <div className="runner-egg" role="status">
+        <span className="runner-guy" aria-hidden="true" />
+        <span className="runner-log" aria-hidden="true" />
+        <p>Jungle Run IRL unlocked. Go play the real one with your whole body.</p>
+      </div>
+    )
+  return null
 }
+
+const COLUMNS = [
+  {
+    title: 'Work',
+    links: [
+      { href: '#work', label: 'Featured' },
+      { href: '#projects', label: 'More projects' },
+      { href: '#research', label: 'Research' },
+    ],
+  },
+  {
+    title: 'About',
+    links: [
+      { href: '#press', label: 'Press' },
+      { href: '#experience', label: 'Experience' },
+      { href: '#awards', label: 'Awards' },
+    ],
+  },
+  {
+    title: 'Elsewhere',
+    links: [
+      { href: profile.links.github, label: 'GitHub', ext: true },
+      { href: profile.links.linkedin, label: 'LinkedIn', ext: true },
+      { href: profile.links.scholar, label: 'Scholar', ext: true },
+      { href: profile.links.resume, label: 'Résumé', ext: true },
+    ],
+  },
+]
 
 export function Contact() {
   const [copied, setCopied] = useState(false)
+  const [markRef, markIn] = useInView<HTMLDivElement>('top 75%')
   return (
-    <section id="contact" className="section contact">
-      <SectionHead index="08" kicker="say hi" title="Let's build something." />
-      <Reveal className="contact-body">
-        <p>
-          Startups, research, hackathon teammates, or just talking about rare cancers and robots. My inbox is open.
-        </p>
+    <footer id="contact" className="footer-shell">
+      <span className="grain" />
+      <span className="f-blob f-blob--lilac" aria-hidden="true">
+        <span className="grain" />
+      </span>
+      <span className="f-blob f-blob--sky" aria-hidden="true">
+        <span className="grain" />
+        <Cloud shape="puff" seed={61} tint="#8eaad3" className="f-cloud" />
+      </span>
+      <span className="f-blob f-blob--mint" aria-hidden="true">
+        <span className="grain" />
+      </span>
+      <span className="f-blob f-blob--peach" aria-hidden="true" />
+      <span className="f-blob f-blob--pink" aria-hidden="true" />
+      <div className="f-cloud-left" aria-hidden="true">
+        <Cloud shape="long" seed={64} tint="#9fb4d4" />
+      </div>
+
+      <div className="footer-cta">
+        <LivePill>Inbox open</LivePill>
+        <Title parts={['Got a problem worth building for?', { br: true }, { em: 'Tell me about it.' }]} />
         <button
-          className="email-big"
+          type="button"
+          className="btn btn-glass btn-lg"
           onClick={() => {
             navigator.clipboard?.writeText(profile.email)
             setCopied(true)
             setTimeout(() => setCopied(false), 1800)
           }}
         >
-          {profile.email}
-          <span className="copy-hint">{copied ? 'copied' : 'click to copy'}</span>
+          {copied ? 'Copied to clipboard' : profile.email}
         </button>
-        <div className="card-links center">
-          <a className="btn btn-primary" href={`mailto:${profile.email}`}>
-            Email me
+        <p className="footer-note">
+          Startups, research, hackathon teammates, or just talking about rare cancers and robots.{' '}
+          <a href={`mailto:${profile.email}`}>Email me directly</a>.
+        </p>
+      </div>
+
+      <div ref={markRef} className={markIn ? 'wordmark is-in' : 'wordmark'} aria-hidden="true">
+        <span className="wordmark-inner">
+          <span className="wordmark-outline">Sachchit</span>
+          <span className="wordmark-fill">Sachchit</span>
+        </span>
+      </div>
+
+      <div className="footer-bar">
+        <div className="footer-brand">
+          <a href="#top" className="nav-logo">
+            <Orb />
+            <span>sachchit</span>
           </a>
-          <ExtLink href={profile.links.github}>GitHub</ExtLink>
-          <ExtLink href={profile.links.linkedin}>LinkedIn</ExtLink>
-          <ExtLink href={profile.links.scholar}>Scholar</ExtLink>
-          <ExtLink href={profile.links.resume}>Résumé</ExtLink>
+          <p>Bioengineering at UC Berkeley. Building FschoolAI. Shipping a hackathon project about every other week.</p>
+          <p className="footer-copy">© 2026 Sachchit Balamurugan · {profile.location}</p>
+          <p className="footer-hint">psst: type “rizz” anywhere, or the Konami code.</p>
         </div>
-        <p className="hint">psst: try typing “rizz” anywhere, or the Konami code.</p>
-      </Reveal>
-      <footer className="footer">
-        <span>© 2026 Sachchit Balamurugan</span>
-        <span>Built with React Three Fiber · {profile.location}</span>
-      </footer>
-    </section>
+        {COLUMNS.map((c) => (
+          <div key={c.title} className="footer-col">
+            <p>{c.title}</p>
+            <ul>
+              {c.links.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} {...('ext' in l ? { target: '_blank', rel: 'noreferrer' } : {})}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </footer>
   )
 }

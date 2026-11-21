@@ -1,33 +1,25 @@
 import { press } from '../data/profile'
-import { Reveal, SectionHead } from './ui'
+import { SectionHead } from '../components/ui'
 
 export default function Press() {
   const items = press.filter((p) => !p.todo && p.href)
-  const outlets = [...new Set(press.map((p) => p.outlet))]
-
   return (
-    <section id="press" className="section section-wide">
-      <SectionHead index="05" kicker="in the press" title="People wrote about it" />
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee-track">
-          {[...outlets, ...outlets].map((o, i) => (
-            <span key={i}>{o}</span>
-          ))}
-        </div>
-      </div>
-      <div className="press-grid">
-        {items.map((p, i) => (
-          <Reveal key={p.href} delay={(i % 3) * 0.06}>
-            <a className="card press-card" href={p.href} target="_blank" rel="noreferrer">
-              <p className="press-outlet">{p.outlet}</p>
-              <h3>{p.headline}</h3>
-              <p className="card-meta">
-                {p.date} <span aria-hidden="true">↗</span>
-              </p>
+    <section id="press" className="section">
+      <SectionHead eyebrow="Press" parts={['People', { em: 'wrote about it.' }]} />
+      <ul className="press-list">
+        {items.map((p) => (
+          <li key={p.href} className="reveal">
+            <a href={p.href} target="_blank" rel="noreferrer">
+              <span className="press-outlet">{p.outlet}</span>
+              <span className="press-headline">{p.headline}</span>
+              <span className="press-date">{p.date}</span>
+              <span className="press-arrow" aria-hidden="true">
+                ↗
+              </span>
             </a>
-          </Reveal>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   )
 }

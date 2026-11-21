@@ -1,51 +1,66 @@
 import { ongoingResearch, profile, publications } from '../data/profile'
-import { ExtLink, Reveal, SectionHead } from './ui'
+import { SectionHead } from '../components/ui'
+
+const SHORT = ['IYRC 2025 · Tokyo', 'JRHS 2024']
+const TINTS = ['lilac', 'sky'] as const
 
 export default function Research() {
   return (
-    <section id="research" className="section">
-      <SectionHead index="03" kicker="research" title="Published, peer-reviewed, presented in Tokyo">
-        Two papers so far: one on finding a rare cancer early, and one on who gets to be good at tennis.
-      </SectionHead>
-      <div className="papers">
+    <section id="research" className="section section-wide">
+      <SectionHead
+        eyebrow="Research"
+        parts={['Published, peer-reviewed,', { em: 'presented in Tokyo.' }]}
+        sub="Two papers so far: one on finding a rare cancer early, and one on who gets to be good at tennis."
+      />
+      <div className="paper-grid">
         {publications.map((p, i) => (
-          <Reveal key={p.title} delay={i * 0.1}>
-            <article className="paper">
-              <div className="paper-spine">
-                <span>{p.year}</span>
-                <span>{p.venue.includes('IYRC') ? 'IYRC' : 'JRHS'}</span>
+          <article key={p.title} className={`paper-card tint-${TINTS[i]} reveal`}>
+            <span className="grain" />
+            <header>
+              <h3>{SHORT[i]}</h3>
+              <p>{p.venue}</p>
+            </header>
+            <div className="sheets">
+              <div className="sheet sheet-back">
+                <span className="sheet-label">Paper</span>
+                <p className="sheet-title">{p.title}</p>
+                <p className="sheet-authors">{p.authors}</p>
               </div>
-              <div className="paper-body">
-                <p className="card-meta">{p.venue}</p>
-                <h3>{p.title}</h3>
-                <p className="paper-authors">{p.authors}</p>
-                <p>{p.note}</p>
-                <div className="card-links">
-                  {p.links.map((l) => (
-                    <ExtLink key={l.href} href={l.href}>
-                      {l.label}
-                    </ExtLink>
-                  ))}
-                </div>
-              </div>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-      <Reveal className="ongoing">
-        <h3>Also in the lab</h3>
-        <dl>
-          {ongoingResearch.map((r) => (
-            <div key={r.org}>
-              <dt>{r.org}</dt>
-              <dd>{r.what}</dd>
+              <a className="sheet sheet-front" href={p.links[0].href} target="_blank" rel="noreferrer">
+                <span className="sheet-label">Read it</span>
+                <span className="sheet-link">
+                  <i aria-hidden="true">✓</i> {p.links[0].label} <span aria-hidden="true">↗</span>
+                </span>
+              </a>
             </div>
-          ))}
-        </dl>
-        <ExtLink href={profile.links.scholar} className="text-link">
-          Google Scholar profile
-        </ExtLink>
-      </Reveal>
+            <p className="paper-note">{p.note}</p>
+          </article>
+        ))}
+        <article className="paper-card tint-mint reveal">
+          <span className="grain" />
+          <header>
+            <h3>Also in the lab</h3>
+            <p>Ongoing work, not published yet</p>
+          </header>
+          <div className="sheets">
+            <div className="sheet sheet-list">
+              <span className="sheet-label">Labs</span>
+              {ongoingResearch.map((r) => (
+                <div key={r.org} className="lab">
+                  <i aria-hidden="true">✓</i>
+                  <div>
+                    <b>{r.org}</b>
+                    <span>{r.what}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <a className="btn btn-ring btn-sm paper-scholar" href={profile.links.scholar} target="_blank" rel="noreferrer">
+            Google Scholar <span aria-hidden="true">↗</span>
+          </a>
+        </article>
+      </div>
     </section>
   )
 }
