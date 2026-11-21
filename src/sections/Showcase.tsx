@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { featured, spotLabels, type Featured } from '../data/projects'
 import { Wallpaper } from '../components/Sky'
-import { ArrowDown, Avatar, Orb, Wave } from '../components/ui'
+import { ArrowDown, Avatar, Mark, Wave } from '../components/ui'
 import { clamp01, ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useClock } from '../lib/hooks'
 import FschoolMock from './FschoolMock'
@@ -101,7 +101,7 @@ function Panel({ f, r, typed, visible }: { f: Featured | null; r: Reveal; typed:
   return (
     <div className={visible ? 'panel is-on' : 'panel'}>
       <div className="panel-head">
-        <Orb small />
+        <Mark small />
         SACHCHIT
         <small>{f ? f.role : 'portfolio'}</small>
       </div>
@@ -182,7 +182,7 @@ function Note({
   return (
     <div className={shown ? 'note is-on' : 'note'} aria-hidden={!shown}>
       <div className="note-head">
-        <Orb small />
+        <Mark small />
         <b>Sachchit</b>
         <span>now</span>
       </div>
@@ -396,7 +396,7 @@ export default function Showcase() {
 
           <div ref={overlay} className="showcase-overlay">
             <div className="menubar" aria-hidden="true">
-              <Orb small />
+              <Mark small />
               <b>{active?.name ?? 'Finder'}</b>
               {['File', 'Edit', 'View', 'Window', 'Help'].map((m) => (
                 <span key={m} className="menubar-menu">
@@ -405,7 +405,7 @@ export default function Showcase() {
               ))}
               <span className="menubar-right">
                 <span className={panelOn ? 'menubar-status is-on' : 'menubar-status'} key={`${state.index}-${r.people > 0}`}>
-                  <Orb small />
+                  <Mark small />
                   <i className="pulse-dot" />
                 </span>
                 <WifiIcon />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { missions } from '../data/profile'
 import { Wallpaper } from '../components/Sky'
-import { ExtLink, Orb, Title, Wave } from '../components/ui'
+import { ExtLink, Mark, Title, Wave } from '../components/ui'
 
 /** Newest entry slides in on top every 3.2s, like a live feed. */
 function useFeed() {
@@ -46,7 +46,7 @@ export default function Missions() {
         <div className="desk" aria-hidden="true">
           <Wallpaper scene="dusk" bob={false} />
           <div className="desk-bar">
-            <Orb small />
+            <Mark small />
             <b>Mission log</b>
             <span>~/nasa</span>
           </div>

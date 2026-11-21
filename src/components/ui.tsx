@@ -1,4 +1,4 @@
-import { Fragment, type CSSProperties, type ElementType, type ReactNode } from 'react'
+import { Fragment, useId, type CSSProperties, type ElementType, type ReactNode } from 'react'
 import { useInView } from '../lib/hooks'
 
 /** `after` is punctuation glued to the italic phrase, e.g. a trailing comma. */
@@ -86,7 +86,30 @@ export function Avatar({ initial, tone, className }: { initial: string; tone: To
   )
 }
 
-export const Orb = ({ small = false }: { small?: boolean }) => <span className={small ? 'orb orb--sm' : 'orb'} aria-hidden="true" />
+/** The site mark: a DNA double helix on a gradient tile (bioengineering, and the old site's favicon). */
+export function Mark({ small = false }: { small?: boolean }) {
+  const id = `m${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  return (
+    <svg className={small ? 'mark-logo mark-logo--sm' : 'mark-logo'} viewBox="0 0 64 64" aria-hidden="true">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#a996f2" />
+          <stop offset="0.55" stopColor="#7fb2f0" />
+          <stop offset="1" stopColor="#8fd3a8" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="18" fill={`url(#${id})`} />
+      <path d="M24 19h16M22 32h20M24 45h16" stroke="#fff" strokeOpacity="0.6" strokeWidth="3.5" strokeLinecap="round" />
+      <path
+        d="M20 10c0 14 24 14 24 22s-24 8-24 22M44 10c0 14-24 14-24 22s24 8 24 22"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
 
 export const Wave = () => (
   <span className="wave" aria-hidden="true">

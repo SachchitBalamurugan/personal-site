@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { profile } from '../data/profile'
 import { Cloud } from '../components/Sky'
-import { LivePill, Orb, Title } from '../components/ui'
+import { LivePill, Mark, Title } from '../components/ui'
 import { useInView } from '../lib/hooks'
 
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
@@ -44,7 +44,7 @@ export function EasterEggs() {
     return (
       <div className="toast" role="status">
         <div className="note-head">
-          <Orb small />
+          <Mark small />
           <b>Brainrot Lang</b>
           <span>now</span>
         </div>
@@ -144,7 +144,7 @@ export function Contact() {
       <div className="footer-bar">
         <div className="footer-brand">
           <a href="#top" className="nav-logo">
-            <Orb />
+            <Mark />
             <span>sachchit</span>
           </a>
           <p>Bioengineering at UC Berkeley. Building FschoolAI. Shipping a hackathon project about every other week.</p>

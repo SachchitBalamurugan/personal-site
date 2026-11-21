@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Orb } from '../components/ui'
+import { Mark } from '../components/ui'
 
 const LINKS = [
   ['#work', 'Work'],
@@ -20,7 +20,7 @@ export default function Nav() {
   return (
     <nav className={scrolled ? 'nav is-scrolled' : 'nav'} aria-label="Main">
       <a href="#top" className="nav-logo" aria-label="Sachchit Balamurugan, back to top">
-        <Orb />
+        <Mark />
         <span>sachchit</span>
       </a>
       <ul>

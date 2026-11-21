@@ -117,7 +117,7 @@ code {
 }
 
 /* ===================================================================
-   Shared bits: buttons, pills, avatars, orb
+   Shared bits: buttons, pills, avatars, logo mark
    =================================================================== */
 .btn {
   display: inline-flex;
@@ -291,26 +291,19 @@ code {
 .tone-peach { background: #fde1cf; color: #9c4d28; }
 .tone-mint { background: #d5f0dc; color: #2f6b45; }
 
-/* An original gradient orb for the logo. */
-.orb {
-  display: inline-block;
+/* The site mark: DNA helix tile. */
+.mark-logo {
+  display: block;
   flex-shrink: 0;
   width: 30px;
   height: 30px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.95) 0 7%, transparent 32%),
-    radial-gradient(circle at 72% 76%, #8fc6ff 0, transparent 56%),
-    radial-gradient(circle at 22% 82%, #ff9fd0 0, transparent 52%),
-    linear-gradient(135deg, #c39bff, #7aa8ff 55%, #ffb3c7);
-  box-shadow:
-    inset 0 0 0 0.5px rgb(255 255 255 / 0.55),
-    inset -3px -4px 8px rgb(80 40 160 / 0.25);
+  filter: drop-shadow(0 3px 6px rgb(90 80 170 / 0.25));
 }
 
-.orb--sm {
+.mark-logo--sm {
   width: 15px;
   height: 15px;
+  filter: none;
 }
 
 .wave {
