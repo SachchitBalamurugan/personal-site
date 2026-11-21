@@ -22,9 +22,15 @@ export type Shot =
   /** Drawn in HTML instead of a screenshot; the mock marks its own spots. */
   | { kind: 'fschool'; spots: [string, string, string] }
 
+/** A local demo video, or a YouTube embed when there is no local file. */
+export type Video =
+  | { kind: 'file'; src: string; poster: string; caption?: string }
+  | { kind: 'youtube'; id: string; caption?: string }
+
 export interface Featured {
   id: string
   name: string
+  video?: Video
   /** One line shown as the panel's "live context". */
   tagline: string
   /** A sentence or two under the tagline. */
@@ -60,6 +66,8 @@ export interface Project {
   repo?: string
   /** Repo exists but is private: show a badge instead of a link. */
   privateRepo?: boolean
+  /** Demo video in public/demos: H.264 mp4 plus a poster frame. */
+  video?: Video
   /** Which little mock UI the card draws. */
   mini: 'orbit' | 'jungle' | 'guidewire' | 'chela' | 'brainrot'
   tint: 'lilac' | 'sky' | 'mint' | 'peach' | 'periwinkle'
@@ -93,20 +101,22 @@ export const featured: Featured[] = [
   {
     id: 'cadswarm',
     name: 'CADSwarm',
-    tagline: 'A CAD app where your team’s AI agents build one live model together',
+    tagline: 'A team’s AI agents building one live CAD model together',
     blurb:
-      'Claude Code, Codex or OpenCode agents work on the same parametric model at once, through a team MCP server. Geometry changes go through the shared host, so object locks keep two agents off the same part.',
-    role: 'Builder',
+      'You describe a part, like an enclosure for a Raspberry Pi. A lead agent splits it into tasks, and Claude Code, Codex or OpenCode agents build the parts live while people watch and steer from FreeCAD or a phone. No CAD experience needed.',
+    role: 'Cal Hacks 13.0',
     year: 2026,
+    event: 'Cal Hacks 13.0',
     facts: [
-      { badge: 'AI', title: 'Claude Code, Codex, OpenCode', sub: 'They all work through the team MCP server' },
-      { badge: '13', title: '7 parts, 13 occurrences', sub: 'The four-blade rotor example, with an interference check' },
+      { badge: 'DB', title: 'SpacetimeDB enforces the rules', sub: 'Change a part you don’t hold and it’s refused and rolled back' },
+      { badge: '✓', title: 'A reviewer agent', sub: 'Checks fit and printability before the STL is exported' },
     ],
-    cta: { title: 'Install in one line', sub: 'cadswarm.design', href: 'https://www.cadswarm.design/', badge: 'live', icon: '⬡' },
+    cta: { title: 'Get it free', sub: 'cadswarm.design', href: 'https://www.cadswarm.design/', badge: 'live', icon: '⬡' },
     note: {
-      title: 'Its own CAD engine',
-      body: 'Constrained sketches, a parametric part history, undo and redo, and connector-based assemblies. Exact solids go out as STEP.',
+      title: 'Built at Cal Hacks 13.0',
+      body: 'Free and open source. Shared sizes, crash takeover, and a lead agent that plans the build.',
     },
+    video: { kind: 'youtube', id: 'E3yfQqsgq7Y', caption: 'Our Cal Hacks demo video.' },
     live: 'https://www.cadswarm.design/',
     repo: 'https://github.com/CADSwarm/cadswarm',
     label: 'CADSwarm · ESP32 case',
@@ -254,6 +264,13 @@ export const projects: Project[] = [
     tech: ['FastAPI', 'WebSockets', 'Gemini Live', 'Stripe'],
     live: 'https://orbit-ai-kappa.vercel.app',
     privateRepo: true,
+    video: {
+      kind: 'file',
+      src: '/demos/orbit.mp4',
+      poster: '/demos/orbit.jpg',
+      caption:
+        "A call on Orbit's teleprompter: the opening line fills in before dialing, the stage rail follows the call, and the roadmap's objection answer appears when the buyer asks about price.",
+    },
     mini: 'orbit',
     tint: 'periwinkle',
   },
@@ -293,6 +310,13 @@ export const projects: Project[] = [
     event: 'Hack-Nation',
     tech: ['TypeScript', 'ONNX', 'Whisper', 'MediaPipe'],
     privateRepo: true,
+    video: {
+      kind: 'file',
+      src: '/demos/chela.mp4',
+      poster: '/demos/chela.jpg',
+      caption:
+        "My real webcam take, run through Chela's own blink detector and Morse decoder. Natural blinks are ignored, H E L P is typed, and SEND speaks it.",
+    },
     mini: 'chela',
     tint: 'peach',
   },

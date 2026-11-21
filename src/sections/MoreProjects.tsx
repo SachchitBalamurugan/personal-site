@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from 'react'
 import { projects, type Project } from '../data/projects'
 import { profile } from '../data/profile'
 import { ExtLink, SectionHead, Wave } from '../components/ui'
+import { VideoModal } from '../components/VideoModal'
 
 function Mini({ kind }: { kind: Project['mini'] }) {
   switch (kind) {
@@ -114,6 +115,7 @@ function Mini({ kind }: { kind: Project['mini'] }) {
 
 function ProjectCard({ p, i }: { p: Project; i: number }) {
   const [open, setOpen] = useState(false)
+  const [watching, setWatching] = useState(false)
   return (
     <article className={`proj tint-${p.tint} reveal`}>
       <div className="proj-visual">
@@ -138,6 +140,11 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
           </div>
         </div>
         <div className="proj-links">
+          {p.video && (
+            <button type="button" className="btn btn-dark btn-sm" onClick={() => setWatching(true)}>
+              <span className="play" aria-hidden="true" /> Watch demo
+            </button>
+          )}
           <button type="button" className="btn btn-ring btn-sm" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
             {open ? 'Less' : 'How it works'}
           </button>
@@ -154,6 +161,7 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
           {p.privateRepo && <span className="badge-private">private repo</span>}
         </div>
       </div>
+      {watching && p.video && <VideoModal title={p.name} video={p.video} onClose={() => setWatching(false)} />}
     </article>
   )
 }

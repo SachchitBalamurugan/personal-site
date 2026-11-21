@@ -5,6 +5,7 @@ import { ArrowDown, Avatar, Orb, Wave } from '../components/ui'
 import { clamp01, ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useClock } from '../lib/hooks'
 import FschoolMock from './FschoolMock'
+import { VideoModal } from '../components/VideoModal'
 
 const N = featured.length
 /** Scroll (in viewports) before the first project, then one viewport per project. */
@@ -164,7 +165,19 @@ function Panel({ f, r, typed, visible }: { f: Featured | null; r: Reveal; typed:
   )
 }
 
-function Note({ f, index, shown, onNext }: { f: Featured | null; index: number; shown: boolean; onNext: () => void }) {
+function Note({
+  f,
+  index,
+  shown,
+  onNext,
+  onWatch,
+}: {
+  f: Featured | null
+  index: number
+  shown: boolean
+  onNext: () => void
+  onWatch: () => void
+}) {
   const href = f?.live ?? f?.repo
   return (
     <div className={shown ? 'note is-on' : 'note'} aria-hidden={!shown}>
@@ -183,9 +196,15 @@ function Note({ f, index, shown, onNext }: { f: Featured | null; index: number; 
         </div>
       )}
       <div className="note-actions">
-        <button type="button" tabIndex={shown ? 0 : -1} onClick={onNext}>
-          {index < N - 1 ? 'Next project' : 'Keep going'}
-        </button>
+        {f?.video ? (
+          <button type="button" tabIndex={shown ? 0 : -1} onClick={onWatch}>
+            ▶ Watch demo
+          </button>
+        ) : (
+          <button type="button" tabIndex={shown ? 0 : -1} onClick={onNext}>
+            {index < N - 1 ? 'Next project' : 'Keep going'}
+          </button>
+        )}
         {href && (
           <a href={href} target="_blank" rel="noreferrer" tabIndex={shown ? 0 : -1} className="primary">
             Open ↗
@@ -222,6 +241,7 @@ export default function Showcase() {
   const [state, setState] = useState({ index: -1, progress: 0 })
   const [prev, setPrev] = useState(-1)
   const [panelOn, setPanelOn] = useState(false)
+  const [watching, setWatching] = useState<Featured | null>(null)
   const clock = useClock()
 
   // Scale the 1040×720 window stage to whatever room the layout leaves it.
@@ -347,12 +367,14 @@ export default function Showcase() {
             </p>
             {f.live && <a href={f.live}>{f.name} website</a>}
             {f.repo && <a href={f.repo}>{f.name} on GitHub</a>}
+            {f.video?.kind === 'youtube' && <a href={`https://www.youtube.com/watch?v=${f.video.id}`}>{f.name} demo video</a>}
           </li>
         ))}
       </ul>
-      <div className="showcase-sticky" aria-hidden="true">
+      {watching?.video && <VideoModal title={watching.name} video={watching.video} onClose={() => setWatching(null)} />}
+      <div className="showcase-sticky">
         <div ref={frame} className="showcase-frame" data-tone={active?.scene === 'dusk' ? 'dark' : 'light'}>
-          <div className="walls">
+          <div className="walls" aria-hidden="true">
             {(['noon', ...featured.map((f) => f.scene)] as const).map((scene, i) => (
               <div key={`${scene}-${i}`} className={i === state.index + 1 ? 'wall-slot is-on' : 'wall-slot'}>
                 <Wallpaper scene={scene} />
@@ -373,7 +395,7 @@ export default function Showcase() {
           </div>
 
           <div ref={overlay} className="showcase-overlay">
-            <div className="menubar">
+            <div className="menubar" aria-hidden="true">
               <Orb small />
               <b>{active?.name ?? 'Finder'}</b>
               {['File', 'Edit', 'View', 'Window', 'Help'].map((m) => (
@@ -392,7 +414,7 @@ export default function Showcase() {
               </span>
             </div>
 
-            <div ref={area} className="stage-area">
+            <div ref={area} className="stage-area" aria-hidden="true">
               <div ref={stage} className="stage" style={{ width: W, height: H }}>
                 {featured.map((f, i) => (
                   <div key={f.id} data-win={i} aria-hidden={i !== state.index}>
@@ -411,7 +433,13 @@ export default function Showcase() {
 
             <div className="side">
               <Panel f={active} r={r} typed={typed} visible={panelOn} />
-              <Note f={active} index={Math.max(0, state.index)} shown={r.note} onNext={() => jumpTo(state.index + 1)} />
+              <Note
+                f={active}
+                index={Math.max(0, state.index)}
+                shown={r.note}
+                onNext={() => jumpTo(state.index + 1)}
+                onWatch={() => setWatching(active)}
+              />
             </div>
 
             <div className="tabs">
