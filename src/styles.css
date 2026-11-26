@@ -3244,6 +3244,25 @@ html.modal-open {
   }
 }
 
+@media (max-width: 360px) {
+  .menubar {
+    padding-inline: 8px;
+  }
+
+  .menubar-right {
+    gap: 5px;
+  }
+
+  .stage-area {
+    bottom: 340px;
+  }
+
+  .chip {
+    padding-inline: 7px;
+    font-size: 11px;
+  }
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 10px;
