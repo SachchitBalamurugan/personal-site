@@ -5,6 +5,7 @@ import { ArrowDown, Avatar, Mark, Wave } from '../components/ui'
 import { clamp01, ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useClock } from '../lib/hooks'
 import FschoolMock from './FschoolMock'
+import TransferDemo from './TransferDemo'
 import { VideoModal } from '../components/VideoModal'
 
 const N = featured.length
@@ -46,6 +47,7 @@ function revealAt(p: number): Reveal {
 const TONES = ['lilac', 'ochre', 'slate', 'moss', 'clay'] as const
 
 function windowHeight(f: Featured) {
+  if (f.shot.kind === 'transfer') return 690
   if (f.shot.kind !== 'image') return 600
   return Math.max(420, Math.min(H, BAR + (W * f.shot.height) / f.shot.width))
 }
@@ -54,7 +56,9 @@ function ShotWindow({ f, typed, className }: { f: Featured; typed: number; class
   const h = windowHeight(f)
   const shot = f.shot
   let body
-  if (shot.kind === 'fschool') {
+  if (shot.kind === 'transfer') {
+    body = className === 'is-on' && <TransferDemo />
+  } else if (shot.kind === 'fschool') {
     body = <FschoolMock typed={typed} />
   } else {
     const ch = h - BAR
@@ -77,7 +81,7 @@ function ShotWindow({ f, typed, className }: { f: Featured; typed: number; class
     )
   }
   return (
-    <div className={`win ${className}`} style={{ height: h, top: (H - h) / 2 }}>
+    <div className={`win ${className}${shot.kind === 'transfer' ? ' win-terminal' : ''}`} style={{ height: h, top: (H - h) / 2 }}>
       <div className="win-bar">
         <span className="lights" aria-hidden="true">
           <i />
@@ -313,8 +317,9 @@ export default function Showcase() {
   )
 
   const active = state.index >= 0 ? featured[state.index] : null
-  const r = active ? revealAt(state.progress) : EMPTY
-  const typed = clamp01(state.progress / 0.4)
+  const panelProgress = active?.shot.kind === 'transfer' ? 1 : state.progress
+  const r = active ? revealAt(panelProgress) : EMPTY
+  const typed = clamp01(panelProgress / 0.4)
 
   // Move the green highlight box onto the current spot of the active window.
   useLayoutEffect(() => {
@@ -357,6 +362,9 @@ export default function Showcase() {
 
   return (
     <section ref={section} id="work" aria-label="Featured work" className="showcase" style={{ height: `${TRACK_VH}vh` }}>
+      {featured.map((f, i) => (
+        <span key={f.id} id={f.id} aria-hidden="true" style={{ position: 'absolute', top: `${(LEAD + i + 0.02) * 100}vh` }} />
+      ))}
       {/* The stage below is visual and scroll-driven; this list carries the same content for screen readers. */}
       <ul className="sr-only">
         {featured.map((f) => (
@@ -414,7 +422,7 @@ export default function Showcase() {
               </span>
             </div>
 
-            <div ref={area} className="stage-area" aria-hidden="true">
+            <div ref={area} className="stage-area" aria-hidden={active?.shot.kind !== 'transfer'}>
               <div ref={stage} className="stage" style={{ width: W, height: H }}>
                 {featured.map((f, i) => (
                   <div key={f.id} data-win={i} aria-hidden={i !== state.index}>

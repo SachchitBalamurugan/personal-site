@@ -21,6 +21,7 @@ export type Shot =
   | { kind: 'image'; src: string; alt: string; width: number; height: number; bg: string; spots: [Spot, Spot, Spot] }
   /** Drawn in HTML instead of a screenshot; the mock marks its own spots. */
   | { kind: 'fschool'; spots: [string, string, string] }
+  | { kind: 'transfer'; spots: [string, string, string] }
 
 /** A local demo video, or a YouTube embed when there is no local file. */
 export type Video =
@@ -256,7 +257,7 @@ export const featured: Featured[] = [
     name: 'Agent Transfer',
     tagline: 'Take your coding setup from Claude Code to Codex, or back again',
     blurb:
-      'Pack your skills, project instructions and selected project history into a local file. Preview the changes before importing them, then search an old conversation to pick up where you left off.',
+      'Install Agent Transfer in Codex, ask it to preview your Claude skills, then approve the transfer. In a new Codex session you can call a transferred skill such as $release-notes on your last commit.',
     role: 'Builder',
     year: 2026,
     facts: [
@@ -265,24 +266,14 @@ export const featured: Featured[] = [
     ],
     cta: { title: 'Install Agent Transfer', sub: 'Setup and examples on GitHub', href: gh('agent-transfer') + '#install', badge: 'open', icon: '↔' },
     note: {
-      title: 'Bring an old decision into a new session',
-      body: 'Search your imported chats for a phrase you remember and hand the matching excerpt to the other agent.',
+      title: 'The supporting files come along',
+      body: 'Each compatible skill brings its scripts and templates with it. Open a fresh session in the destination agent to use it.',
     },
-    live: 'https://agent-transfer-sepia.vercel.app/',
     repo: gh('agent-transfer'),
-    label: 'Agent Transfer · Transfer preview',
+    label: 'Agent Transfer · Terminal demo',
     shot: {
-      kind: 'image',
-      src: '/work/agent-transfer.webp',
-      alt: 'Agent Transfer’s landing page with an example preview of a skill, project instructions, a custom hook and searchable chats',
-      width: 1500,
-      height: 1036,
-      bg: '#f6f2e5',
-      spots: [
-        { label: 'Skills and instructions', x: 0.555, y: 0.773, w: 0.287, h: 0.077 },
-        { label: 'Hooks to review', x: 0.555, y: 0.851, w: 0.287, h: 0.041 },
-        { label: 'Searchable chats', x: 0.555, y: 0.892, w: 0.287, h: 0.041 },
-      ],
+      kind: 'transfer',
+      spots: ['Preview the move', 'Copy two skills', 'Run a transferred skill'],
     },
     scene: 'noon',
   },
