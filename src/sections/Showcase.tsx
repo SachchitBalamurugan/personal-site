@@ -1,18 +1,25 @@
 import { useCallback, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { featured, spotLabels, type Featured } from '../data/projects'
+import { transferSteps } from '../data/transferSteps'
 import { Wallpaper } from '../components/Sky'
 import { ArrowDown, Avatar, Mark, Wave } from '../components/ui'
 import { clamp01, ScrollTrigger, useGSAP } from '../lib/gsap'
-import { useClock } from '../lib/hooks'
+import { useClock, useReducedMotion } from '../lib/hooks'
 import FschoolMock from './FschoolMock'
 import TransferDemo from './TransferDemo'
 import { VideoModal } from '../components/VideoModal'
 
 const N = featured.length
-/** Scroll (in viewports) before the first project, then one viewport per project. */
+/** Project boundaries in viewports, including room to read each terminal step. */
 const LEAD = 1.15
 const TAIL = 0.45
-const TRACK_VH = (LEAD + N + TAIL) * 100 + 100
+const STEP_SCREENS = 0.75
+const projectStarts = [LEAD]
+for (const project of featured) {
+  const screens = project.shot.kind === 'transfer' ? transferSteps.length * STEP_SCREENS : 1
+  projectStarts.push(projectStarts[projectStarts.length - 1] + screens)
+}
+const TRACK_SCREENS = projectStarts[N] + TAIL + 1
 /** The window is designed at this size and scaled to fit its area. */
 const W = 1040
 const H = 720
@@ -52,12 +59,12 @@ function windowHeight(f: Featured) {
   return Math.max(420, Math.min(H, BAR + (W * f.shot.height) / f.shot.width))
 }
 
-function ShotWindow({ f, typed, className }: { f: Featured; typed: number; className: string }) {
+function ShotWindow({ f, typed, className, children }: { f: Featured; typed: number; className: string; children?: ReactNode }) {
   const h = windowHeight(f)
   const shot = f.shot
   let body
   if (shot.kind === 'transfer') {
-    body = className === 'is-on' && <TransferDemo />
+    body = children
   } else if (shot.kind === 'fschool') {
     body = <FschoolMock typed={typed} />
   } else {
@@ -99,7 +106,10 @@ function Label({ children, hidden = false }: { children: ReactNode; hidden?: boo
   return <div className={hidden ? 'p-label is-hidden' : 'p-label'}>{children}</div>
 }
 
-function Panel({ f, r, typed, visible }: { f: Featured | null; r: Reveal; typed: number; visible: boolean }) {
+function Panel({ f, r, typed, visible, transferIndex }: {
+  f: Featured | null; r: Reveal; typed: number; visible: boolean; transferIndex?: number
+}) {
+  const step = transferIndex === undefined ? undefined : transferSteps[transferIndex]
   const now = f ? f.tagline.slice(0, Math.round(f.tagline.length * typed)) : 'Ready. Just keep scrolling.'
   const labels = f ? spotLabels(f) : []
   return (
@@ -111,28 +121,28 @@ function Panel({ f, r, typed, visible }: { f: Featured | null; r: Reveal; typed:
       </div>
       <div className="p-group">
         <Label>
-          <Wave /> Now showing
+          <Wave /> {transferIndex === undefined ? 'Now showing' : `Step ${transferIndex + 1} of ${transferSteps.length} · ${step?.name}`}
         </Label>
-        <p className="panel-now">
-          {now}
-          {f && typed < 1 && <span className="caret" aria-hidden="true" />}
+        <p className="panel-now" aria-live={step ? 'polite' : undefined}>
+          {step?.explanation ?? now}
+          {!step && f && typed < 1 && <span className="caret" aria-hidden="true" />}
         </p>
-        <div className="chips">
+        {!step && <div className="chips">
           {labels.map((s, i) => (
             <span key={`${f?.id}-${s}`} className={i < r.chips ? 'chip is-on' : 'chip'}>
               <i aria-hidden="true" />
               {s}
             </span>
           ))}
-        </div>
+        </div>}
       </div>
-      {r.finding && (
+      {!step && r.finding && (
         <div className="finding">
           <span className="spin" aria-hidden="true" />
           Pulling up the details…
         </div>
       )}
-      <div className="p-group">
+      {(!step || r.people > 0) && <div className="p-group">
         <Label hidden={r.people === 0}>Highlights</Label>
         <div className="rows">
           {f?.facts.slice(0, r.people).map((fact, i) => {
@@ -149,8 +159,8 @@ function Panel({ f, r, typed, visible }: { f: Featured | null; r: Reveal; typed:
             )
           })}
         </div>
-      </div>
-      {f && r.opportunity && (
+      </div>}
+      {f && (step || r.opportunity) && (
         <div className="p-group p-opportunity">
           <Label>Try it</Label>
           <a className="row row-in row-link" href={f.cta.href} target="_blank" rel="noreferrer">
@@ -247,6 +257,7 @@ export default function Showcase() {
   const [panelOn, setPanelOn] = useState(false)
   const [watching, setWatching] = useState<Featured | null>(null)
   const clock = useClock()
+  const reducedMotion = useReducedMotion()
 
   // Scale the 1040×720 window stage to whatever room the layout leaves it.
   useLayoutEffect(() => {
@@ -290,8 +301,9 @@ export default function Showcase() {
 
     let next = { index: -1, progress: 0 }
     if (i >= LEAD) {
-      const idx = Math.min(N - 1, Math.floor(i - LEAD))
-      next = { index: idx, progress: Math.round(400 * clamp01(i - LEAD - idx)) / 400 }
+      const idx = Math.min(N - 1, projectStarts.findLastIndex(start => start <= i))
+      const length = projectStarts[idx + 1] - projectStarts[idx]
+      next = { index: idx, progress: Math.round(400 * clamp01((i - projectStarts[idx]) / length)) / 400 }
     }
     const cur = current.current
     if (cur.index !== next.index || cur.progress !== next.progress) {
@@ -303,23 +315,27 @@ export default function Showcase() {
 
   useGSAP(
     () => {
+      const el = section.current
+      if (!el) return
+      const sync = (trigger: ScrollTrigger) => update((trigger.scroll() - trigger.start) * TRACK_SCREENS / el.offsetHeight)
       const st = ScrollTrigger.create({
-        trigger: section.current,
+        trigger: el,
         start: 'top top',
         end: 'bottom bottom',
-        onUpdate: (self) => update((self.scroll() - self.start) / window.innerHeight),
-        onRefresh: (self) => update((self.scroll() - self.start) / window.innerHeight),
+        onUpdate: sync,
+        onRefresh: sync,
       })
-      update((st.scroll() - st.start) / window.innerHeight)
+      sync(st)
       return () => document.documentElement.classList.remove('immersive')
     },
     { scope: section },
   )
 
   const active = state.index >= 0 ? featured[state.index] : null
-  const panelProgress = active?.shot.kind === 'transfer' ? 1 : state.progress
-  const r = active ? revealAt(panelProgress) : EMPTY
-  const typed = clamp01(panelProgress / 0.4)
+  const position = state.progress * transferSteps.length
+  const transferIndex = active?.shot.kind === 'transfer' ? Math.min(Math.floor(position), transferSteps.length - 1) : undefined
+  const r = active ? revealAt(state.progress) : EMPTY
+  const typed = clamp01(state.progress / 0.4)
 
   // Move the green highlight box onto the current spot of the active window.
   useLayoutEffect(() => {
@@ -350,20 +366,21 @@ export default function Showcase() {
     })
   }, [state.index, r.highlight])
 
-  const jumpTo = (target: number) => {
+  const jumpTo = (target: number, offset = 0.02) => {
     const el = section.current
     if (!el) return
     const top = el.getBoundingClientRect().top + window.scrollY
-    const y = target >= N ? top + el.offsetHeight - window.innerHeight * 0.4 : top + (LEAD + target + 0.02) * window.innerHeight
-    window.scrollTo({ top: y, behavior: 'smooth' })
+    const unit = el.offsetHeight / TRACK_SCREENS
+    const y = target >= N ? top + el.offsetHeight - window.innerHeight * 0.4 : top + (projectStarts[target] + offset) * unit
+    window.scrollTo({ top: y, behavior: reducedMotion ? 'instant' : 'smooth' })
   }
 
   const spotLabel = active && r.highlight >= 0 ? spotLabels(active)[r.highlight] : ''
 
   return (
-    <section ref={section} id="work" aria-label="Featured work" className="showcase" style={{ height: `${TRACK_VH}vh` }}>
+    <section ref={section} id="work" aria-label="Featured work" className="showcase" style={{ height: `${TRACK_SCREENS * 100}vh` }}>
       {featured.map((f, i) => (
-        <span key={f.id} id={f.id} aria-hidden="true" style={{ position: 'absolute', top: `${(LEAD + i + 0.02) * 100}vh` }} />
+        <span key={f.id} id={f.id} aria-hidden="true" style={{ position: 'absolute', top: `${(projectStarts[i] + 0.02) * 100}vh` }} />
       ))}
       {/* The stage below is visual and scroll-driven; this list carries the same content for screen readers. */}
       <ul className="sr-only">
@@ -430,7 +447,12 @@ export default function Showcase() {
                       f={f}
                       typed={i === state.index ? typed : 1}
                       className={i === state.index ? 'is-on' : i === prev ? 'is-prev' : 'is-next'}
-                    />
+                    >
+                      {i === state.index && transferIndex !== undefined && (
+                        <TransferDemo index={transferIndex} progress={position - transferIndex}
+                          onSelect={step => jumpTo(i, step * STEP_SCREENS + 0.02)} />
+                      )}
+                    </ShotWindow>
                   </div>
                 ))}
                 <div ref={highlight} className="spot-box" aria-hidden="true">
@@ -440,7 +462,7 @@ export default function Showcase() {
             </div>
 
             <div className="side">
-              <Panel f={active} r={r} typed={typed} visible={panelOn} />
+              <Panel f={active} r={r} typed={typed} visible={panelOn} transferIndex={transferIndex} />
               <Note
                 f={active}
                 index={Math.max(0, state.index)}

@@ -24,7 +24,7 @@
 }
 .transfer-nav button[aria-pressed="true"] { background: #cdf0a8; color: #1c2c20; }
 .transfer-nav button:hover, .transfer-nav button:focus-visible { border-color: #cdf0a8; }
-.transfer-nav .transfer-play { margin-left: auto; min-width: 58px; border-color: #53655d; }
+.transfer-scroll-hint { margin-left: auto; color: #b5c7bd; font-size: 24px; white-space: nowrap; }
 
 .transfer-console { padding: 30px 2px 18px; }
 .transfer-context { color: #b4c9be; font-size: 25px; }
@@ -34,12 +34,6 @@
 .transfer-prompt code { font-size: 36px; line-height: 1.26; }
 .transfer-prompt code span { display: block; width: max-content; white-space: pre; }
 .transfer-reply { margin: 14px 0 0 37px; font-size: 28px; color: #b9dfa7; }
-.transfer-demo[data-motion="on"] .transfer-prompt code span {
-  animation: transfer-type 560ms steps(var(--chars), end) var(--delay) both;
-}
-.transfer-demo[data-motion="on"] .transfer-reply { animation: transfer-appear 180ms ease-out var(--delay) both; }
-@keyframes transfer-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
-@keyframes transfer-appear { from { opacity: 0; } to { opacity: 1; } }
 
 .transfer-route {
   position: relative;
@@ -63,29 +57,20 @@
 .transfer-file::before { content: ''; width: 12px; height: 15px; border: 2px solid currentColor; border-radius: 2px; opacity: .7; }
 .transfer-pending { color: #b1bfb5; font-size: 25px; }
 .transfer-demo[data-phase="3"] .transfer-target .transfer-file:first-of-type { color: #d8f9a4; font-weight: 700; }
-.transfer-flight { display: none; position: absolute; inset: 0; pointer-events: none; }
-.transfer-demo[data-motion="on"] .transfer-flight { display: block; }
+.transfer-flight { position: absolute; inset: 0; pointer-events: none; }
 .transfer-flight .transfer-file {
   position: absolute;
   top: 92px;
-  left: 21px;
+  left: calc(21px + var(--travel) * (50% + 48px));
   border-radius: 6px;
   background: #cdf0a8;
   color: #17291c;
   padding: 0 8px;
-  animation: transfer-copy 900ms ease-in-out 140ms both;
 }
-.transfer-flight .transfer-file + .transfer-file { top: 130px; animation-delay: 380ms; }
-@keyframes transfer-copy {
-  0% { opacity: 0; left: 21px; }
-  12% { opacity: 1; }
-  86% { opacity: 1; }
-  100% { opacity: 0; left: calc(50% + 69px); }
+.transfer-flight .transfer-file + .transfer-file { top: 130px; }
+@media (prefers-reduced-motion: reduce) {
+  .transfer-flight { display: none; }
 }
-.transfer-demo[data-motion="on"][data-phase="2"] .transfer-target .transfer-file {
-  animation: transfer-appear 180ms ease-out 940ms both;
-}
-.transfer-demo[data-motion="on"][data-phase="2"] .transfer-target .transfer-file + .transfer-file { animation-delay: 1180ms; }
 
 @media (max-width: 860px) {
   .transfer-nav button { padding: 13px 18px; font-size: 31px; }

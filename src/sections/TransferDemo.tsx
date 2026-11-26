@@ -1,70 +1,36 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { useReducedMotion } from '../lib/hooks'
+import type { CSSProperties } from 'react'
+import { transferSteps } from '../data/transferSteps'
+import { clamp01 } from '../lib/gsap'
 import './transfer-demo.css'
 
-const steps = [
-  { name: 'Install', context: 'Shell · CLI installed', lines: ['agent-transfer install codex'], reply: 'Open a new Codex session.', duration: 2800 },
-  { name: 'Preview', context: 'Codex · new session', lines: ['Use $agent-transfer to preview', 'my Claude skills for Codex.'], reply: '2 skills ready to copy.', duration: 3800 },
-  { name: 'Transfer', context: 'Codex', lines: ['Apply that preview.'], reply: 'Copied 2 skills into .agents/skills/.', duration: 2900 },
-  { name: 'Use skill', context: 'Codex · new session', lines: ['Use $release-notes on my last commit.'], reply: '• Add CSV export', duration: 0 },
-]
 const skills = ['release-notes', 'review-diff']
-const last = steps.length - 1
 
-export default function TransferDemo() {
-  const root = useRef<HTMLDivElement>(null)
-  const reduced = useReducedMotion()
-  const [visible, setVisible] = useState(false)
-  const [index, setIndex] = useState(0)
-  const [auto, setAuto] = useState(!reduced)
-  const step = steps[index]
-  const playing = auto && index < last
-
-  useEffect(() => {
-    const element = root.current
-    if (!element) return
-    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    if (!visible || !playing) return
-    const timer = window.setTimeout(() => setIndex(index + 1), step.duration)
-    return () => window.clearTimeout(timer)
-  }, [visible, playing, index, step.duration])
-
-  function togglePlayback() {
-    if (index === last) setIndex(0)
-    setAuto(!playing)
-  }
-
-  const copied = index >= 2
+export default function TransferDemo({ index, progress, onSelect }: {
+  index: number
+  progress: number
+  onSelect: (step: number) => void
+}) {
+  const step = transferSteps[index]
+  // Each copy starts a little later and stays in Codex once it reaches the destination.
+  const positions = skills.map((_, i) => clamp01((progress - 0.08 - i * 0.17) / 0.57))
+  const copying = index === 2 && positions.some(p => p < 1)
   return (
-    <div ref={root} className="transfer-demo" aria-label="Agent Transfer terminal walkthrough"
-      data-motion={auto && !reduced ? 'on' : 'off'} data-phase={index}>
+    <div className="transfer-demo" role="group" aria-label="Agent Transfer terminal walkthrough" data-phase={index}>
       <div className="transfer-nav" role="group" aria-label="Demo steps">
-        {steps.map((item, i) => (
+        {transferSteps.map((item, i) => (
           <button key={item.name} type="button" aria-pressed={i === index}
-            onClick={() => { setAuto(false); setIndex(i) }}>{item.name}</button>
+            onClick={() => onSelect(i)}>{item.name}</button>
         ))}
-        <button className="transfer-play" type="button" onClick={togglePlayback}
-          aria-label={index === last ? 'Replay demo' : playing ? 'Pause demo' : 'Play demo'}>
-          <span aria-hidden="true">{index === last ? '↺' : playing ? 'Ⅱ' : '▶'}</span>
-        </button>
+        <span className="transfer-scroll-hint">Scroll ↓</span>
       </div>
 
-      <div key={index} className="transfer-console">
+      <div className="transfer-console">
         <div className="transfer-context">{step.context}</div>
         <div className="transfer-prompt">
           <span aria-hidden="true">{index === 0 ? '$' : '›'}</span>
-          <code>{step.lines.map((line, i) =>
-            <span key={line} style={{ '--delay': `${i * 580}ms`, '--chars': line.length } as CSSProperties}>{line}</span>,
-          )}</code>
+          <code>{step.lines.map(line => <span key={line}>{line}</span>)}</code>
         </div>
-        <p className="transfer-reply" style={{ '--delay': index === 2 ? '1300ms' : `${step.lines.length * 580 + 150}ms` } as CSSProperties}>
-          {step.reply}
-        </p>
+        <p className="transfer-reply">{copying ? 'Copying the approved skills…' : step.reply}</p>
       </div>
 
       <div className="transfer-route">
@@ -75,11 +41,18 @@ export default function TransferDemo() {
         <div className="transfer-bridge" aria-hidden="true">→</div>
         <div className="transfer-folder transfer-target">
           <b>Codex</b><code>.agents/skills/</code>
-          {copied ? skills.map(name => <span key={name} className="transfer-file">{name}</span>)
-            : <span className="transfer-pending">{index === 1 ? 'Awaiting approval' : 'Awaiting transfer'}</span>}
+          {index < 2
+            ? <span className="transfer-pending">{index === 1 ? 'Awaiting approval' : 'Awaiting transfer'}</span>
+            : skills.map((name, i) => (index === 3 || positions[i] === 1) &&
+              <span key={name} className="transfer-file">{name}</span>)}
         </div>
         {index === 2 && <div className="transfer-flight" aria-hidden="true">
-          {skills.map(name => <span key={name} className="transfer-file">{name}</span>)}
+          {skills.map((name, i) => (
+            <span key={name} className="transfer-file" style={{
+              '--travel': positions[i],
+              opacity: clamp01(Math.min(positions[i], 1 - positions[i]) * 10),
+            } as CSSProperties}>{name}</span>
+          ))}
         </div>}
       </div>
     </div>
