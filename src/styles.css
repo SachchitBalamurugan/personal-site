@@ -3192,6 +3192,12 @@ html.modal-open {
   }
 
   /* The desktop stage, stacked for phones */
+  .menubar,
+  .menubar-right {
+    gap: 8px;
+    white-space: nowrap;
+  }
+
   .stage-area {
     top: 44px;
     right: 10px;
@@ -3214,7 +3220,7 @@ html.modal-open {
 
   .chip:nth-child(n + 3),
   .rows .row:nth-child(n + 2),
-  .p-opportunity,
+  .p-opportunity > .p-label,
   .note,
   .menubar-menu,
   .keep-scrolling,

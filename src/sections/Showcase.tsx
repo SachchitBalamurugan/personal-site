@@ -386,7 +386,7 @@ export default function Showcase() {
           <div ref={intro} className="showcase-intro">
             <p className="eyebrow">Featured work</p>
             <h2>
-              If you only see five, <em>see these.</em>
+              If you only see a few, <em>see these.</em>
             </h2>
             <p className="showcase-intro-sub">Keep scrolling.</p>
             <span className="round-hint bob">
