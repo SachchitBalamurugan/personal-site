@@ -1,3 +1,5 @@
+import { transferSteps } from './transferSteps'
+
 /** Painted backdrop behind a featured project in the showcase. */
 export type Scene = 'noon' | 'lilac' | 'gold' | 'dusk' | 'grove' | 'dawn'
 
@@ -21,7 +23,7 @@ export type Shot =
   | { kind: 'image'; src: string; alt: string; width: number; height: number; bg: string; spots: [Spot, Spot, Spot] }
   /** Drawn in HTML instead of a screenshot; the mock marks its own spots. */
   | { kind: 'fschool'; spots: [string, string, string] }
-  | { kind: 'transfer'; spots: [string, string, string] }
+  | { kind: 'transfer' }
 
 /** A local demo video, or a YouTube embed when there is no local file. */
 export type Video =
@@ -51,9 +53,11 @@ export interface Featured {
   scene: Scene
 }
 
-/** The three highlight labels for a project, in order. */
-export const spotLabels = (f: Featured) =>
-  f.shot.kind === 'image' ? f.shot.spots.map((s) => s.label) : f.shot.spots
+/** Highlight labels for the scroll-driven showcase. */
+export function spotLabels(f: Featured, transferIndex = 0) {
+  if (f.shot.kind === 'transfer') return transferSteps[transferIndex].callouts.map(spot => spot.label)
+  return f.shot.kind === 'image' ? f.shot.spots.map(s => s.label) : f.shot.spots
+}
 
 export interface Project {
   id: string
@@ -271,10 +275,7 @@ export const featured: Featured[] = [
     },
     repo: gh('agent-transfer'),
     label: 'Agent Transfer · Terminal demo',
-    shot: {
-      kind: 'transfer',
-      spots: ['Preview the move', 'Copy two skills', 'Run a transferred skill'],
-    },
+    shot: { kind: 'transfer' },
     scene: 'noon',
   },
 ]

@@ -34,6 +34,16 @@
 .transfer-prompt code { font-size: 36px; line-height: 1.26; }
 .transfer-prompt code span { display: block; width: max-content; white-space: pre; }
 .transfer-reply { margin: 14px 0 0 37px; font-size: 28px; color: #b9dfa7; }
+.transfer-reply [data-spot] { display: inline-block; }
+
+/* Keep the showcase's callout close to its target and clear of the adjacent terminal line. */
+.spot-box[data-transfer-spot] span {
+  top: auto;
+  bottom: calc(100% + 5px);
+  font-size: 19px;
+}
+.spot-box[data-transfer-spot="command"] span { left: auto; right: -2px; }
+.spot-box[data-transfer-spot="reply"] span { top: calc(100% + 5px); bottom: auto; }
 
 .transfer-route {
   position: relative;
@@ -72,7 +82,20 @@
   .transfer-flight { display: none; }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 859px) {
+  .showcase-overlay[data-terminal] {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 44px 10px 46px;
+  }
+  .showcase-overlay[data-terminal] > :is(.stage-area, .side) {
+    position: relative;
+    inset: auto;
+    min-height: 0;
+    width: auto;
+  }
+  .spot-box[data-transfer-spot] span { font-size: 27px; }
   .transfer-nav button { padding: 13px 18px; font-size: 31px; }
   .transfer-prompt code { font-size: 39px; }
   .transfer-context, .transfer-folder code { font-size: 27px; }

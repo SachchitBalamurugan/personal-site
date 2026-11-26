@@ -106,12 +106,13 @@ function Label({ children, hidden = false }: { children: ReactNode; hidden?: boo
   return <div className={hidden ? 'p-label is-hidden' : 'p-label'}>{children}</div>
 }
 
-function Panel({ f, r, typed, visible, transferIndex }: {
-  f: Featured | null; r: Reveal; typed: number; visible: boolean; transferIndex?: number
+function Panel({ f, r, typed, visible, transferIndex, part }: {
+  f: Featured | null; r: Reveal; typed: number; visible: boolean; transferIndex?: number; part: number
 }) {
   const step = transferIndex === undefined ? undefined : transferSteps[transferIndex]
   const now = f ? f.tagline.slice(0, Math.round(f.tagline.length * typed)) : 'Ready. Just keep scrolling.'
-  const labels = f ? spotLabels(f) : []
+  const labels = f ? spotLabels(f, transferIndex) : []
+  const visibleChips = step ? part + 1 : r.chips
   return (
     <div className={visible ? 'panel is-on' : 'panel'}>
       <div className="panel-head">
@@ -124,17 +125,17 @@ function Panel({ f, r, typed, visible, transferIndex }: {
           <Wave /> {transferIndex === undefined ? 'Now showing' : `Step ${transferIndex + 1} of ${transferSteps.length} · ${step?.name}`}
         </Label>
         <p className="panel-now" aria-live={step ? 'polite' : undefined}>
-          {step?.explanation ?? now}
+          {step?.callouts[part].explanation ?? now}
           {!step && f && typed < 1 && <span className="caret" aria-hidden="true" />}
         </p>
-        {!step && <div className="chips">
+        <div className="chips">
           {labels.map((s, i) => (
-            <span key={`${f?.id}-${s}`} className={i < r.chips ? 'chip is-on' : 'chip'}>
+            <span key={`${f?.id}-${s}`} className={i < visibleChips ? 'chip is-on' : 'chip'}>
               <i aria-hidden="true" />
               {s}
             </span>
           ))}
-        </div>}
+        </div>
       </div>
       {!step && r.finding && (
         <div className="finding">
@@ -334,7 +335,10 @@ export default function Showcase() {
   const active = state.index >= 0 ? featured[state.index] : null
   const position = state.progress * transferSteps.length
   const transferIndex = active?.shot.kind === 'transfer' ? Math.min(Math.floor(position), transferSteps.length - 1) : undefined
+  const part = transferIndex !== undefined && position - transferIndex >= 0.4 ? 1 : 0
+  const callout = transferIndex === undefined ? undefined : transferSteps[transferIndex].callouts[part]
   const r = active ? revealAt(state.progress) : EMPTY
+  const spotKey = callout?.target ?? r.highlight
   const typed = clamp01(state.progress / 0.4)
 
   // Move the green highlight box onto the current spot of the active window.
@@ -343,28 +347,35 @@ export default function Showcase() {
     const st = stage.current
     if (!box || !st) return
     const win = st.querySelector<HTMLElement>(`[data-win="${state.index}"]`)
-    const spot = win?.querySelector<HTMLElement>(`[data-spot="${r.highlight}"]`)
-    if (!win || !spot || r.highlight < 0) {
+    const spot = win?.querySelector<HTMLElement>(`[data-spot="${spotKey}"]`)
+    if (!spot) {
       box.style.opacity = '0'
       return
     }
-    let left = 0
-    let top = 0
-    let node: HTMLElement | null = spot
-    while (node && node !== st) {
-      left += node.offsetLeft
-      top += node.offsetTop
-      node = node.offsetParent as HTMLElement | null
+    const align = () => {
+      let left = 0
+      let top = 0
+      let node: HTMLElement | null = spot
+      while (node && node !== st) {
+        left += node.offsetLeft
+        top += node.offsetTop
+        node = node.offsetParent as HTMLElement | null
+      }
+      const pad = 6
+      Object.assign(box.style, {
+        left: `${left - pad}px`,
+        top: `${top - pad}px`,
+        width: `${spot.offsetWidth + pad * 2}px`,
+        height: `${spot.offsetHeight + pad * 2}px`,
+        opacity: '1',
+      })
     }
-    const pad = 6
-    Object.assign(box.style, {
-      left: `${left - pad}px`,
-      top: `${top - pad}px`,
-      width: `${spot.offsetWidth + pad * 2}px`,
-      height: `${spot.offsetHeight + pad * 2}px`,
-      opacity: '1',
-    })
-  }, [state.index, r.highlight])
+    align()
+    const observer = new ResizeObserver(align)
+    observer.observe(spot)
+    if (area.current) observer.observe(area.current)
+    return () => observer.disconnect()
+  }, [state.index, transferIndex, spotKey])
 
   const jumpTo = (target: number, offset = 0.02) => {
     const el = section.current
@@ -375,7 +386,7 @@ export default function Showcase() {
     window.scrollTo({ top: y, behavior: reducedMotion ? 'instant' : 'smooth' })
   }
 
-  const spotLabel = active && r.highlight >= 0 ? spotLabels(active)[r.highlight] : ''
+  const spotLabel = callout?.label ?? (active && r.highlight >= 0 ? spotLabels(active)[r.highlight] : '')
 
   return (
     <section ref={section} id="work" aria-label="Featured work" className="showcase" style={{ height: `${TRACK_SCREENS * 100}vh` }}>
@@ -419,7 +430,7 @@ export default function Showcase() {
             </span>
           </div>
 
-          <div ref={overlay} className="showcase-overlay">
+          <div ref={overlay} className="showcase-overlay" data-terminal={transferIndex !== undefined || undefined}>
             <div className="menubar" aria-hidden="true">
               <Mark small />
               <b>{active?.name ?? 'Finder'}</b>
@@ -455,14 +466,14 @@ export default function Showcase() {
                     </ShotWindow>
                   </div>
                 ))}
-                <div ref={highlight} className="spot-box" aria-hidden="true">
+                <div ref={highlight} className="spot-box" data-transfer-spot={callout?.target} aria-hidden="true">
                   <span>{spotLabel}</span>
                 </div>
               </div>
             </div>
 
             <div className="side">
-              <Panel f={active} r={r} typed={typed} visible={panelOn} transferIndex={transferIndex} />
+              <Panel f={active} r={r} typed={typed} visible={panelOn} transferIndex={transferIndex} part={part} />
               <Note
                 f={active}
                 index={Math.max(0, state.index)}

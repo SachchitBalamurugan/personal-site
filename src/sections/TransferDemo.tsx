@@ -28,18 +28,18 @@ export default function TransferDemo({ index, progress, onSelect }: {
         <div className="transfer-context">{step.context}</div>
         <div className="transfer-prompt">
           <span aria-hidden="true">{index === 0 ? '$' : '›'}</span>
-          <code>{step.lines.map(line => <span key={line}>{line}</span>)}</code>
+          <code data-spot="command">{step.lines.map(line => <span key={line}>{line}</span>)}</code>
         </div>
-        <p className="transfer-reply">{copying ? 'Copying the approved skills…' : step.reply}</p>
+        <p className="transfer-reply"><span data-spot="reply">{copying ? 'Copying the approved skills…' : step.reply}</span></p>
       </div>
 
       <div className="transfer-route">
-        <div className="transfer-folder">
+        <div className="transfer-folder" data-spot="source">
           <b>Claude Code</b><code>.claude/skills/</code>
           {skills.map(name => <span className="transfer-file" key={name}>{name}</span>)}
         </div>
         <div className="transfer-bridge" aria-hidden="true">→</div>
-        <div className="transfer-folder transfer-target">
+        <div className="transfer-folder transfer-target" data-spot="destination">
           <b>Codex</b><code>.agents/skills/</code>
           {index < 2
             ? <span className="transfer-pending">{index === 1 ? 'Awaiting approval' : 'Awaiting transfer'}</span>
