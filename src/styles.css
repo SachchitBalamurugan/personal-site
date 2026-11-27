@@ -3356,3 +3356,31 @@ html.modal-open {
     clip-path: inset(0);
   }
 }
+.gravity-story { max-width: 1440px; margin: 0 auto; padding: 120px 7% 130px; }
+.gravity-intro { display: grid; grid-template-columns: 1fr 0.8fr; gap: 8%; align-items: start; }
+.gravity-intro h2 { margin: 20px 0 0; font: 500 clamp(48px, 5.5vw, 82px)/1.04 'Source Serif 4', Georgia, serif; letter-spacing: -0.045em; max-width: 680px; }
+.gravity-intro h2 em { color: #a46d48; font-weight: 400; }
+.gravity-intro-copy { padding-top: 22px; max-width: 510px; }
+.gravity-intro-copy p, .gravity-feature-copy > p:last-child, .gravity-bottom p { color: #5c5853; font-size: 17px; line-height: 1.7; }
+.gravity-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.gravity-hero-image, .gravity-feature figure { margin: 0; }
+.gravity-hero-image { margin-top: 64px; background: #171719; border-radius: 24px; padding: 18px; box-shadow: 0 24px 60px #2e21151c; }
+.gravity-hero-image img, .gravity-feature img { display: block; width: 100%; height: auto; border-radius: 12px; }
+.gravity-hero-image figcaption { color: #b8b2ab; font-size: 12px; padding: 14px 5px 2px; }
+.gravity-features { margin-top: 80px; display: grid; gap: 72px; }
+.gravity-feature { display: grid; grid-template-columns: .68fr 1fr; align-items: center; gap: 7%; }
+.gravity-feature:nth-child(even) .gravity-feature-copy { order: 2; }
+.gravity-feature-copy h3 { font: 500 clamp(31px, 3vw, 46px)/1.12 'Source Serif 4', Georgia, serif; letter-spacing: -.035em; margin: 16px 0; }
+.gravity-feature figure { background: #171719; padding: 10px; border-radius: 17px; box-shadow: 0 16px 45px #2e211519; }
+.gravity-bottom { border-top: 1px solid #ddd7ce; margin-top: 88px; padding-top: 30px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.gravity-bottom p { max-width: 710px; margin: 0; }
+.gravity-bottom a { color: #8c5936; font-weight: 700; white-space: nowrap; }
+@media (max-width: 760px) {
+  .gravity-story { padding: 80px 6% 90px; }
+  .gravity-intro, .gravity-feature { grid-template-columns: 1fr; gap: 24px; }
+  .gravity-intro-copy { padding-top: 0; }
+  .gravity-hero-image { margin-top: 40px; padding: 8px; border-radius: 16px; }
+  .gravity-features { margin-top: 54px; gap: 52px; }
+  .gravity-feature:nth-child(even) .gravity-feature-copy { order: 0; }
+  .gravity-bottom { margin-top: 55px; align-items: start; flex-direction: column; }
+}

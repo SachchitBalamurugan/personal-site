@@ -3,6 +3,7 @@ import Nav from './sections/Nav'
 import Hero from './sections/Hero'
 import About from './sections/About'
 import Showcase from './sections/Showcase'
+import GravityMemory from './sections/GravityMemory'
 import MoreProjects from './sections/MoreProjects'
 import Research from './sections/Research'
 import Missions from './sections/Missions'
@@ -55,6 +56,7 @@ export default function App() {
         <Hero />
         <About />
         <Showcase />
+        <GravityMemory />
         <MoreProjects />
         <Research />
         <Missions />

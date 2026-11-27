@@ -82,6 +82,31 @@ const gh = (name: string) => `https://github.com/SachchitBalamurugan/${name}`
 
 export const featured: Featured[] = [
   {
+    id: 'gravity-memory',
+    name: 'Gravity Memory',
+    tagline: 'Long-term memory for AI agents, with answers you can trace',
+    blurb: 'Agents carry context across sessions, recall corrected facts, and show the source behind an answer. Developers can replay what an earlier run knew.',
+    role: 'Creator',
+    year: 2026,
+    facts: [
+      { badge: '↗', title: 'Memory across runs', sub: 'Correct facts and hand context to the next agent' },
+      { badge: '⌁', title: 'Sources & replay', sub: 'Inspect evidence and compare an old answer with the current one' },
+    ],
+    cta: { title: 'Explore the code', sub: 'Open source on GitHub', href: gh('gravity-memory'), badge: 'code', icon: 'G' },
+    note: { title: 'Built for agents', body: 'A local-first memory system with an agent console, MCP, Python and TypeScript clients, and optional local models.' },
+    repo: gh('gravity-memory'),
+    label: 'Gravity Memory / Console',
+    shot: {
+      kind: 'image', src: '/work/gravity/overview.webp', alt: 'Gravity Memory console overview showing agent activity and memory', width: 1440, height: 960, bg: '#101113',
+      spots: [
+        { label: 'Agent runs', x: 0.18, y: 0.18, w: 0.3, h: 0.17 },
+        { label: 'Memory activity', x: 0.49, y: 0.18, w: 0.3, h: 0.17 },
+        { label: 'Recent activity', x: 0.18, y: 0.45, w: 0.68, h: 0.25 },
+      ],
+    },
+    scene: 'dusk',
+  },
+  {
     id: 'fschoolai',
     name: 'FschoolAI',
     tagline: 'An AI tutor that learns from your own course materials',
